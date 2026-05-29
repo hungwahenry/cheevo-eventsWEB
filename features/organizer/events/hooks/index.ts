@@ -12,4 +12,5 @@ export {
   useUpdateFlyer,
 } from "./use-event-mutations"
 export { useFlyerUpload } from "./use-flyer-upload"
+export { useGallery } from "./use-gallery"
 export { usePlaceSearch } from "./use-place-search"

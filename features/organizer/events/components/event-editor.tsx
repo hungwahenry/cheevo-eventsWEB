@@ -107,7 +107,7 @@ export function EventEditor({ event }: { event: EventItem }) {
 
         <div className="order-2 flex flex-col gap-10 lg:order-1 lg:col-span-2">
           <DetailsSection form={form} onChange={set} onPlace={applyPlace} />
-          <GallerySection />
+          <GallerySection event={event} />
           <FeaturesSection />
         </div>
       </div>
