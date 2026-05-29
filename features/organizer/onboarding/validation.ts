@@ -19,3 +19,12 @@ export function isValidUrl(value: string): boolean {
     return false
   }
 }
+
+export function normalizeSocialHandle(raw: string, baseUrl: string): string {
+  const domain = baseUrl.replace(/^https?:\/\//i, "")
+  let value = raw.replace(/^https?:\/\//i, "")
+  if (value.toLowerCase().startsWith(domain.toLowerCase())) {
+    value = value.slice(domain.length)
+  }
+  return value.replace(/^@+/, "").replace(/[\s/]+/g, "")
+}
