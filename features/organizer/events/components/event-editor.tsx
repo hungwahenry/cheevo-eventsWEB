@@ -15,6 +15,7 @@ import { EventEditorHeader } from "@/features/organizer/events/components/editor
 import { FeaturesSection } from "@/features/organizer/events/components/editor/features-section"
 import { FlyerSection } from "@/features/organizer/events/components/editor/flyer-section"
 import { GallerySection } from "@/features/organizer/events/components/editor/gallery-section"
+import { InterestsSection } from "@/features/organizer/events/components/editor/interests-section"
 import { PublishErrors } from "@/features/organizer/events/components/editor/publish-errors"
 import { TicketsSection } from "@/features/organizer/events/tickets/components/tickets-section"
 import {
@@ -72,6 +73,10 @@ export function EventEditor({ event }: { event: EventItem }) {
     city: event.city ?? "",
   })
 
+  const [interestSlugs, setInterestSlugs] = useState<string[]>(
+    () => event.interests?.map((i) => i.slug) ?? []
+  )
+
   const set = (key: keyof FormState, value: string) =>
     setForm((prev) => ({ ...prev, [key]: value }))
 
@@ -100,6 +105,7 @@ export function EventEditor({ event }: { event: EventItem }) {
       latitude: form.latitude || null,
       longitude: form.longitude || null,
       city: form.city || null,
+      interests: interestSlugs,
     })
 
   const publishErrors =
@@ -144,6 +150,10 @@ export function EventEditor({ event }: { event: EventItem }) {
 
         <div className="order-2 flex flex-col gap-10 lg:order-1 lg:col-span-2">
           <DetailsSection form={form} onChange={set} onPlace={applyPlace} />
+          <InterestsSection
+            selected={interestSlugs}
+            onChange={setInterestSlugs}
+          />
           <TicketsSection event={event} />
           <GallerySection event={event} />
           <FeaturesSection event={event} />

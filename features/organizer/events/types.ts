@@ -1,5 +1,11 @@
 export type EventStatus = "draft" | "published"
 
+export type Interest = {
+  id: number
+  slug: string
+  name: string
+}
+
 export type EventImage = {
   id: string
   url: string
@@ -44,6 +50,7 @@ export type EventItem = {
   images?: EventImage[]
   features?: EventFeature[]
   tickets?: import("./tickets/types").EventTicket[]
+  interests?: Interest[]
 }
 
 export type PlacePrediction = {

@@ -2,11 +2,15 @@ import type {
   EventFeature,
   EventImage,
   EventItem,
+  Interest,
   PlaceDetails,
   PlacePrediction,
 } from "@/features/organizer/events/types"
 import { api } from "@/lib/api"
 
+export function listInterests() {
+  return api.get<Interest[]>("/interests")
+}
 
 export function listEvents() {
   return api.get<EventItem[]>("/organizer/events")
