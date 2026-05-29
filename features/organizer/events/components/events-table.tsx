@@ -17,8 +17,11 @@ export function EventsTable({ events }: { events: EventItem[] }) {
         <TableHeader className="bg-muted/40">
           <TableRow>
             <TableHead>Event</TableHead>
+            <TableHead className="hidden w-56 md:table-cell">
+              Location
+            </TableHead>
+            <TableHead className="w-44">When</TableHead>
             <TableHead className="w-28">Status</TableHead>
-            <TableHead className="w-36">Date</TableHead>
             <TableHead className="w-12" />
           </TableRow>
         </TableHeader>
