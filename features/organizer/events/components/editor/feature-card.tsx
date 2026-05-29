@@ -12,6 +12,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button"
+import { formatEventTimeWindow } from "@/features/organizer/events/format"
 import type { EventFeature } from "@/features/organizer/events/types"
 import { useSortable } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
@@ -45,7 +46,7 @@ export function FeatureCard({ feature, onEdit, onDelete }: FeatureCardProps) {
     opacity: isDragging ? 0.5 : 1,
   }
 
-  const timeWindow = formatRange(feature.starts_at, feature.ends_at)
+  const timeWindow = formatEventTimeWindow(feature.starts_at, feature.ends_at)
 
   return (
     <div
@@ -133,23 +134,4 @@ export function FeatureCard({ feature, onEdit, onDelete }: FeatureCardProps) {
       </div>
     </div>
   )
-}
-
-function formatRange(
-  starts: string | null,
-  ends: string | null
-): string | null {
-  if (!starts && !ends) return null
-  const formatter = new Intl.DateTimeFormat(undefined, {
-    month: "short",
-    day: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
-  })
-  if (starts && ends) {
-    return `${formatter.format(new Date(starts))} → ${formatter.format(new Date(ends))}`
-  }
-  if (starts) return `From ${formatter.format(new Date(starts))}`
-  if (ends) return `Until ${formatter.format(new Date(ends!))}`
-  return null
 }

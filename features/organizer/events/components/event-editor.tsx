@@ -12,14 +12,8 @@ import {
 } from "@/features/organizer/events/hooks"
 import type { EventItem, PlaceDetails } from "@/features/organizer/events/types"
 import { isApiError } from "@/lib/api"
+import { toLocalInputValue } from "@/lib/format/datetime"
 import { useState } from "react"
-
-function toLocalInput(iso: string | null): string {
-  if (!iso) return ""
-  const date = new Date(iso)
-  const pad = (n: number) => String(n).padStart(2, "0")
-  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`
-}
 
 type FormState = {
   title: string
@@ -42,8 +36,8 @@ export function EventEditor({ event }: { event: EventItem }) {
   const [form, setForm] = useState<FormState>({
     title: event.title,
     description: event.description ?? "",
-    starts_at: toLocalInput(event.starts_at),
-    ends_at: toLocalInput(event.ends_at),
+    starts_at: toLocalInputValue(event.starts_at),
+    ends_at: toLocalInputValue(event.ends_at),
     venue_name: event.venue_name ?? "",
     video_url: event.video_url ?? "",
     place_id: event.place_id ?? "",

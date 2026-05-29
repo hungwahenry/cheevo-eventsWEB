@@ -5,6 +5,7 @@ import {
 } from "@/features/organizer/events/hooks/use-feature-mutations"
 import type { EventFeature } from "@/features/organizer/events/types"
 import { isApiError } from "@/lib/api"
+import { toLocalInputValue } from "@/lib/format/datetime"
 import { useEffect, useState } from "react"
 
 type FormState = {
@@ -31,8 +32,8 @@ function fromFeature(feature: EventFeature): FormState {
     title: feature.title,
     description: feature.description ?? "",
     link: feature.link ?? "",
-    starts_at: toLocalInput(feature.starts_at),
-    ends_at: toLocalInput(feature.ends_at),
+    starts_at: toLocalInputValue(feature.starts_at),
+    ends_at: toLocalInputValue(feature.ends_at),
   }
 }
 
@@ -104,11 +105,4 @@ export function useFeatureForm({
     errorMessage,
     isEdit: feature !== null,
   }
-}
-
-function toLocalInput(iso: string | null): string {
-  if (!iso) return ""
-  const date = new Date(iso)
-  const pad = (n: number) => String(n).padStart(2, "0")
-  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`
 }

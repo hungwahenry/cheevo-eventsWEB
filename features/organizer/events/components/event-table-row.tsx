@@ -20,59 +20,21 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { TableCell, TableRow } from "@/components/ui/table"
+import {
+  formatEventStatus,
+  formatEventWhen,
+} from "@/features/organizer/events/format"
 import { useDeleteEvent } from "@/features/organizer/events/hooks"
 import type { EventItem } from "@/features/organizer/events/types"
 import { ImageIcon, MapPinIcon, MoreHorizontalIcon } from "lucide-react"
 import Link from "next/link"
 import { useState } from "react"
 
-const DATE_FORMAT: Intl.DateTimeFormatOptions = {
-  month: "short",
-  day: "numeric",
-  year: "numeric",
-}
-
-const TIME_FORMAT: Intl.DateTimeFormatOptions = {
-  hour: "numeric",
-  minute: "2-digit",
-}
-
-function formatWhen(starts: string | null, ends: string | null) {
-  if (!starts && !ends) return { date: "—", time: null as string | null }
-  if (!starts && ends) {
-    const e = new Date(ends)
-    return {
-      date: `Ends ${e.toLocaleDateString(undefined, DATE_FORMAT)}`,
-      time: e.toLocaleTimeString(undefined, TIME_FORMAT),
-    }
-  }
-  const s = new Date(starts!)
-  const date = s.toLocaleDateString(undefined, DATE_FORMAT)
-  const startTime = s.toLocaleTimeString(undefined, TIME_FORMAT)
-  if (!ends) return { date, time: startTime }
-  const e = new Date(ends)
-  const sameDay = s.toDateString() === e.toDateString()
-  if (sameDay) {
-    return {
-      date,
-      time: `${startTime} – ${e.toLocaleTimeString(undefined, TIME_FORMAT)}`,
-    }
-  }
-  return {
-    date: `${date} → ${e.toLocaleDateString(undefined, DATE_FORMAT)}`,
-    time: startTime,
-  }
-}
-
-function statusLabel(status: EventItem["status"]): string {
-  return status.charAt(0).toUpperCase() + status.slice(1)
-}
-
 export function EventTableRow({ event }: { event: EventItem }) {
   const [deleteOpen, setDeleteOpen] = useState(false)
   const remove = useDeleteEvent()
   const href = `/organizer/events/${event.id}/edit`
-  const when = formatWhen(event.starts_at, event.ends_at)
+  const when = formatEventWhen(event.starts_at, event.ends_at)
 
   return (
     <>
@@ -134,7 +96,7 @@ export function EventTableRow({ event }: { event: EventItem }) {
           <Badge
             variant={event.status === "published" ? "default" : "secondary"}
           >
-            {statusLabel(event.status)}
+            {formatEventStatus(event.status)}
           </Badge>
         </TableCell>
 

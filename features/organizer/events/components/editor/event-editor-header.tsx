@@ -2,6 +2,7 @@
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { formatEventStatus } from "@/features/organizer/events/format"
 import type { EventItem } from "@/features/organizer/events/types"
 import { ChevronLeftIcon } from "lucide-react"
 import Link from "next/link"
@@ -35,7 +36,7 @@ export function EventEditorHeader({
           </Button>
           <span className="truncate text-sm font-semibold">{event.title}</span>
           <Badge variant={published ? "default" : "secondary"}>
-            {event.status}
+            {formatEventStatus(event.status)}
           </Badge>
         </div>
         <div className="flex gap-2">
