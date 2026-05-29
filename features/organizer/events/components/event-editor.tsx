@@ -5,11 +5,12 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
+import { LocationSection } from "@/features/organizer/events/components/location-section"
 import {
   usePublishEvent,
   useUpdateEvent,
 } from "@/features/organizer/events/hooks"
-import type { EventItem } from "@/features/organizer/events/types"
+import type { EventItem, PlaceDetails } from "@/features/organizer/events/types"
 import { isApiError } from "@/lib/api"
 import { useState } from "react"
 
@@ -31,9 +32,27 @@ export function EventEditor({ event }: { event: EventItem }) {
     ends_at: toLocalInput(event.ends_at),
     venue_name: event.venue_name ?? "",
     video_url: event.video_url ?? "",
+    place_id: event.place_id ?? "",
+    address: event.address ?? "",
+    latitude: event.latitude ?? "",
+    longitude: event.longitude ?? "",
+    city: event.city ?? "",
   })
   const set = (key: keyof typeof form, value: string) =>
     setForm((prev) => ({ ...prev, [key]: value }))
+
+  const applyPlace = (place: PlaceDetails) => {
+    setForm((prev) => ({
+      ...prev,
+      place_id: place.place_id,
+      address: place.address ?? "",
+      latitude: place.latitude !== null ? String(place.latitude) : "",
+      longitude: place.longitude !== null ? String(place.longitude) : "",
+      city: place.city ?? "",
+      // Seed venue_name with the resolved name when the user hasn't named it yet.
+      venue_name: prev.venue_name || (place.name ?? ""),
+    }))
+  }
 
   const save = () =>
     update.mutate({
@@ -43,6 +62,11 @@ export function EventEditor({ event }: { event: EventItem }) {
       ends_at: form.ends_at || null,
       venue_name: form.venue_name || null,
       video_url: form.video_url || null,
+      place_id: form.place_id || null,
+      address: form.address || null,
+      latitude: form.latitude || null,
+      longitude: form.longitude || null,
+      city: form.city || null,
     })
 
   const published = event.status === "published"
@@ -134,14 +158,20 @@ export function EventEditor({ event }: { event: EventItem }) {
           </div>
         </div>
 
-        <div className="flex flex-col gap-2">
-          <Label htmlFor="venue_name">Venue name</Label>
-          <Input
-            id="venue_name"
-            value={form.venue_name}
-            onChange={(e) => set("venue_name", e.target.value)}
-            placeholder="e.g. Eko Hotel"
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <LocationSection
+            currentAddress={form.address || null}
+            onResolved={applyPlace}
           />
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="venue_name">Venue name</Label>
+            <Input
+              id="venue_name"
+              value={form.venue_name}
+              onChange={(e) => set("venue_name", e.target.value)}
+              placeholder="e.g. Eko Hotel"
+            />
+          </div>
         </div>
 
         <div className="flex flex-col gap-2">
@@ -156,7 +186,7 @@ export function EventEditor({ event }: { event: EventItem }) {
       </section>
 
       <section className="rounded-xl border border-dashed p-6 text-center text-sm text-muted-foreground">
-        Location search, flyer, gallery & features — coming next.
+        Flyer, gallery & features — coming next.
       </section>
     </div>
   )

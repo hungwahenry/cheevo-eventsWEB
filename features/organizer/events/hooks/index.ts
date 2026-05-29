@@ -7,3 +7,4 @@ export {
   useEvents,
 } from "./use-events"
 export { usePublishEvent, useUpdateEvent } from "./use-event-mutations"
+export { usePlaceSearch } from "./use-place-search"
