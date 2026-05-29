@@ -36,10 +36,14 @@ export type EventItem = {
   video_url: string | null
   status: EventStatus
   published_at: string | null
+  tickets_count: number
+  tickets_min_price: number | null
+  tickets_max_price: number | null
   created_at: string
   // Loaded on show, omitted from the list response.
   images?: EventImage[]
   features?: EventFeature[]
+  tickets?: import("./tickets/types").EventTicket[]
 }
 
 export type PlacePrediction = {

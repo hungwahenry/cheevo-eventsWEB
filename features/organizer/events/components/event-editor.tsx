@@ -1,11 +1,22 @@
 "use client"
 
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
 import { DetailsSection } from "@/features/organizer/events/components/editor/details-section"
 import { EventEditorHeader } from "@/features/organizer/events/components/editor/event-editor-header"
 import { FeaturesSection } from "@/features/organizer/events/components/editor/features-section"
 import { FlyerSection } from "@/features/organizer/events/components/editor/flyer-section"
 import { GallerySection } from "@/features/organizer/events/components/editor/gallery-section"
 import { PublishErrors } from "@/features/organizer/events/components/editor/publish-errors"
+import { TicketsSection } from "@/features/organizer/events/tickets/components/tickets-section"
 import {
   usePublishEvent,
   useUpdateEvent,
@@ -32,6 +43,20 @@ type FormState = {
 export function EventEditor({ event }: { event: EventItem }) {
   const update = useUpdateEvent(event.id)
   const publish = usePublishEvent(event.id)
+  const [confirmOpen, setConfirmOpen] = useState(false)
+
+  const requestPublish = () => {
+    if (event.tickets_count === 0) {
+      setConfirmOpen(true)
+      return
+    }
+    publish.mutate()
+  }
+
+  const confirmPublish = () => {
+    setConfirmOpen(false)
+    publish.mutate()
+  }
 
   const [form, setForm] = useState<FormState>({
     title: event.title,
@@ -87,10 +112,28 @@ export function EventEditor({ event }: { event: EventItem }) {
       <EventEditorHeader
         event={event}
         onSave={save}
-        onPublish={() => publish.mutate()}
+        onPublish={requestPublish}
         isSaving={update.isPending}
         isPublishing={publish.isPending}
       />
+
+      <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Publish without any tickets?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Attendees won&apos;t be able to buy in until you add at least one
+              ticket. You can publish now and add tickets later.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Add a ticket first</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmPublish}>
+              Publish anyway
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       <PublishErrors errors={publishErrors} />
 
@@ -101,6 +144,7 @@ export function EventEditor({ event }: { event: EventItem }) {
 
         <div className="order-2 flex flex-col gap-10 lg:order-1 lg:col-span-2">
           <DetailsSection form={form} onChange={set} onPlace={applyPlace} />
+          <TicketsSection event={event} />
           <GallerySection event={event} />
           <FeaturesSection event={event} />
         </div>
