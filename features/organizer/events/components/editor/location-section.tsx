@@ -40,7 +40,6 @@ export function LocationSection({
           setOpen(true)
         }}
         onFocus={() => setOpen(true)}
-        // Slight delay so a click on a prediction registers before the dropdown closes.
         onBlur={() => setTimeout(() => setOpen(false), 150)}
         placeholder="Search for a venue or address"
         autoCapitalize="off"

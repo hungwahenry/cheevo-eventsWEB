@@ -1,11 +1,11 @@
 "use client"
 
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { LocationSection } from "@/features/organizer/events/components/location-section"
+import { DetailsSection } from "@/features/organizer/events/components/editor/details-section"
+import { EventEditorHeader } from "@/features/organizer/events/components/editor/event-editor-header"
+import { FeaturesSection } from "@/features/organizer/events/components/editor/features-section"
+import { FlyerSection } from "@/features/organizer/events/components/editor/flyer-section"
+import { GallerySection } from "@/features/organizer/events/components/editor/gallery-section"
+import { PublishErrors } from "@/features/organizer/events/components/editor/publish-errors"
 import {
   usePublishEvent,
   useUpdateEvent,
@@ -21,11 +21,25 @@ function toLocalInput(iso: string | null): string {
   return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`
 }
 
+type FormState = {
+  title: string
+  description: string
+  starts_at: string
+  ends_at: string
+  venue_name: string
+  video_url: string
+  place_id: string
+  address: string
+  latitude: string
+  longitude: string
+  city: string
+}
+
 export function EventEditor({ event }: { event: EventItem }) {
   const update = useUpdateEvent(event.id)
   const publish = usePublishEvent(event.id)
 
-  const [form, setForm] = useState({
+  const [form, setForm] = useState<FormState>({
     title: event.title,
     description: event.description ?? "",
     starts_at: toLocalInput(event.starts_at),
@@ -38,7 +52,8 @@ export function EventEditor({ event }: { event: EventItem }) {
     longitude: event.longitude ?? "",
     city: event.city ?? "",
   })
-  const set = (key: keyof typeof form, value: string) =>
+
+  const set = (key: keyof FormState, value: string) =>
     setForm((prev) => ({ ...prev, [key]: value }))
 
   const applyPlace = (place: PlaceDetails) => {
@@ -49,7 +64,6 @@ export function EventEditor({ event }: { event: EventItem }) {
       latitude: place.latitude !== null ? String(place.latitude) : "",
       longitude: place.longitude !== null ? String(place.longitude) : "",
       city: place.city ?? "",
-      // Seed venue_name with the resolved name when the user hasn't named it yet.
       venue_name: prev.venue_name || (place.name ?? ""),
     }))
   }
@@ -69,125 +83,34 @@ export function EventEditor({ event }: { event: EventItem }) {
       city: form.city || null,
     })
 
-  const published = event.status === "published"
   const publishErrors =
     publish.error && isApiError(publish.error) && publish.error.isValidation
       ? Object.values(publish.error.fieldErrors())
       : []
 
   return (
-    <div className="mx-auto flex max-w-2xl flex-col gap-8">
-      <header className="flex items-center justify-between gap-4 border-b pb-4">
-        <div className="flex items-center gap-3">
-          <h1 className="text-xl font-semibold tracking-tight">
-            {event.title}
-          </h1>
-          <Badge variant={published ? "default" : "secondary"}>
-            {event.status}
-          </Badge>
-        </div>
-        <div className="flex gap-2">
-          <Button variant="outline" onClick={save} disabled={update.isPending}>
-            {update.isPending ? "Saving…" : "Save"}
-          </Button>
-          <Button
-            onClick={() => publish.mutate()}
-            disabled={published || publish.isPending}
-          >
-            {published
-              ? "Published"
-              : publish.isPending
-                ? "Publishing…"
-                : "Publish"}
-          </Button>
-        </div>
-      </header>
+    <div className="flex flex-col">
+      <EventEditorHeader
+        event={event}
+        onSave={save}
+        onPublish={() => publish.mutate()}
+        isSaving={update.isPending}
+        isPublishing={publish.isPending}
+      />
 
-      {publishErrors.length > 0 ? (
-        <div className="flex flex-col gap-1 rounded-lg border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive">
-          <p className="font-medium">Before publishing:</p>
-          <ul className="list-inside list-disc">
-            {publishErrors.map((message) => (
-              <li key={message}>{message}</li>
-            ))}
-          </ul>
+      <PublishErrors errors={publishErrors} />
+
+      <div className="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-3 lg:gap-10">
+        <aside className="order-1 flex flex-col gap-6 lg:sticky lg:top-16 lg:order-2 lg:col-span-1 lg:self-start">
+          <FlyerSection event={event} />
+        </aside>
+
+        <div className="order-2 flex flex-col gap-10 lg:order-1 lg:col-span-2">
+          <DetailsSection form={form} onChange={set} onPlace={applyPlace} />
+          <GallerySection />
+          <FeaturesSection />
         </div>
-      ) : null}
-
-      <section className="flex flex-col gap-4">
-        <h2 className="text-sm font-medium">Details</h2>
-
-        <div className="flex flex-col gap-2">
-          <Label htmlFor="title">Title</Label>
-          <Input
-            id="title"
-            value={form.title}
-            onChange={(e) => set("title", e.target.value)}
-          />
-        </div>
-
-        <div className="flex flex-col gap-2">
-          <Label htmlFor="description">Description</Label>
-          <Textarea
-            id="description"
-            rows={4}
-            value={form.description}
-            onChange={(e) => set("description", e.target.value)}
-            placeholder="What's the event about?"
-          />
-        </div>
-
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <div className="flex flex-col gap-2">
-            <Label htmlFor="starts_at">Starts</Label>
-            <Input
-              id="starts_at"
-              type="datetime-local"
-              value={form.starts_at}
-              onChange={(e) => set("starts_at", e.target.value)}
-            />
-          </div>
-          <div className="flex flex-col gap-2">
-            <Label htmlFor="ends_at">Ends</Label>
-            <Input
-              id="ends_at"
-              type="datetime-local"
-              value={form.ends_at}
-              onChange={(e) => set("ends_at", e.target.value)}
-            />
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <LocationSection
-            currentAddress={form.address || null}
-            onResolved={applyPlace}
-          />
-          <div className="flex flex-col gap-2">
-            <Label htmlFor="venue_name">Venue name</Label>
-            <Input
-              id="venue_name"
-              value={form.venue_name}
-              onChange={(e) => set("venue_name", e.target.value)}
-              placeholder="e.g. Eko Hotel"
-            />
-          </div>
-        </div>
-
-        <div className="flex flex-col gap-2">
-          <Label htmlFor="video_url">Promo video URL</Label>
-          <Input
-            id="video_url"
-            value={form.video_url}
-            onChange={(e) => set("video_url", e.target.value)}
-            placeholder="https://… (YouTube, IG, TikTok)"
-          />
-        </div>
-      </section>
-
-      <section className="rounded-xl border border-dashed p-6 text-center text-sm text-muted-foreground">
-        Flyer, gallery & features — coming next.
-      </section>
+      </div>
     </div>
   )
 }
