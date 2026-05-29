@@ -20,6 +20,19 @@ export function useUpdateEvent(id: string) {
   })
 }
 
+export function useUpdateFlyer(id: string) {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (flyer: File) => eventsApi.updateEventFlyer(id, flyer),
+    onSuccess: () => {
+      toast.success("Flyer updated.")
+      queryClient.invalidateQueries({ queryKey: eventKey(id) })
+      queryClient.invalidateQueries({ queryKey: eventsKey })
+    },
+  })
+}
+
 export function usePublishEvent(id: string) {
   const queryClient = useQueryClient()
 

@@ -6,5 +6,10 @@ export {
   useEvent,
   useEvents,
 } from "./use-events"
-export { usePublishEvent, useUpdateEvent } from "./use-event-mutations"
+export {
+  usePublishEvent,
+  useUpdateEvent,
+  useUpdateFlyer,
+} from "./use-event-mutations"
+export { useFlyerUpload } from "./use-flyer-upload"
 export { usePlaceSearch } from "./use-place-search"
