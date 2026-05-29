@@ -1,6 +1,6 @@
 import { SignOutButton } from "@/features/organizer/components/sign-out-button"
 
-export default function OrganizerLayout({
+export default function OrganizerPanelLayout({
   children,
 }: {
   children: React.ReactNode

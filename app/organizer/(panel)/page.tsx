@@ -1,9 +1,20 @@
 "use client"
 
 import { useMe } from "@/features/auth"
+import { useRouter } from "next/navigation"
+import { useEffect } from "react"
 
 export default function OrganizerDashboardPage() {
   const { data: user, isLoading } = useMe()
+  const router = useRouter()
+
+  // Not an organizer yet → send them through onboarding to create an organisation.
+  useEffect(() => {
+    if (!isLoading && user && !user.is_organizer) {
+      router.replace("/organizer/onboarding")
+    }
+  }, [isLoading, user, router])
+
   const firstName = user?.profile.first_name
 
   return (
