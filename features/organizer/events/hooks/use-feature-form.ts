@@ -1,20 +1,15 @@
-import type { FeatureInput } from "@/features/organizer/events/api"
 import {
   useCreateEventFeature,
   useUpdateEventFeature,
 } from "@/features/organizer/events/hooks/use-feature-mutations"
 import type { EventFeature } from "@/features/organizer/events/types"
-import { isApiError } from "@/lib/api"
+import type { EventFeatureInput } from "@/features/organizer/events/validation"
+import { eventFeatureSchema } from "@/features/organizer/events/validation"
+import { applyApiErrors } from "@/lib/api"
 import { toLocalInputValue } from "@/lib/format/datetime"
+import { zodResolver } from "@hookform/resolvers/zod"
 import { useEffect, useState } from "react"
-
-type FormState = {
-  title: string
-  description: string
-  link: string
-  starts_at: string
-  ends_at: string
-}
+import { useForm } from "react-hook-form"
 
 type Options = {
   eventId: string
@@ -23,19 +18,17 @@ type Options = {
   onSuccess?: () => void
 }
 
-function blank(): FormState {
-  return { title: "", description: "", link: "", starts_at: "", ends_at: "" }
-}
-
-function fromFeature(feature: EventFeature): FormState {
+function defaults(feature: EventFeature | null): EventFeatureInput {
   return {
-    title: feature.title,
-    description: feature.description ?? "",
-    link: feature.link ?? "",
-    starts_at: toLocalInputValue(feature.starts_at),
-    ends_at: toLocalInputValue(feature.ends_at),
+    title: feature?.title ?? "",
+    description: feature?.description ?? "",
+    link: feature?.link ?? "",
+    starts_at: toLocalInputValue(feature?.starts_at ?? null),
+    ends_at: toLocalInputValue(feature?.ends_at ?? null),
   }
 }
+
+const orNull = (value: string) => (value === "" ? null : value)
 
 export function useFeatureForm({
   eventId,
@@ -45,19 +38,22 @@ export function useFeatureForm({
 }: Options) {
   const create = useCreateEventFeature(eventId)
   const update = useUpdateEventFeature(eventId, feature?.id ?? "")
+  const mutation = feature ? update : create
 
-  const [form, setForm] = useState<FormState>(() =>
-    feature ? fromFeature(feature) : blank()
-  )
+  const form = useForm<EventFeatureInput>({
+    resolver: zodResolver(eventFeatureSchema),
+    defaultValues: defaults(feature),
+  })
+
   const [imageFile, setImageFile] = useState<File | null>(null)
   const [imagePreview, setImagePreview] = useState<string | null>(null)
 
   useEffect(() => {
     if (!isOpen) return
-    setForm(feature ? fromFeature(feature) : blank())
+    form.reset(defaults(feature))
     setImageFile(null)
     setImagePreview(null)
-  }, [isOpen, feature])
+  }, [isOpen, feature, form])
 
   useEffect(() => {
     return () => {
@@ -65,44 +61,34 @@ export function useFeatureForm({
     }
   }, [imagePreview])
 
-  const set = (key: keyof FormState, value: string) =>
-    setForm((prev) => ({ ...prev, [key]: value }))
-
   const pickImage = (file: File) => {
     if (imagePreview) URL.revokeObjectURL(imagePreview)
     setImageFile(file)
     setImagePreview(URL.createObjectURL(file))
   }
 
-  const submit = () => {
-    const input: FeatureInput = {
-      title: form.title.trim(),
-      description: form.description.trim() || undefined,
-      link: form.link.trim() || undefined,
-      starts_at: form.starts_at || undefined,
-      ends_at: form.ends_at || undefined,
-      image: imageFile,
+  const submit = form.handleSubmit(async (values) => {
+    try {
+      await mutation.mutateAsync({
+        title: values.title.trim(),
+        description: orNull(values.description.trim()) ?? undefined,
+        link: orNull(values.link.trim()) ?? undefined,
+        starts_at: orNull(values.starts_at) ?? undefined,
+        ends_at: orNull(values.ends_at) ?? undefined,
+        image: imageFile,
+      })
+      onSuccess?.()
+    } catch (error) {
+      applyApiErrors(form, error)
     }
-    const mutation = feature ? update : create
-    mutation.mutate(input, { onSuccess: () => onSuccess?.() })
-  }
-
-  const mutation = feature ? update : create
-  const errorMessage =
-    mutation.error && isApiError(mutation.error) ? mutation.error.message : null
-
-  const existingImageUrl = feature?.image_url ?? null
-  const previewUrl = imagePreview ?? existingImageUrl
+  })
 
   return {
     form,
-    set,
-    previewUrl,
-    pickImage,
     submit,
     isSubmitting: mutation.isPending,
-    canSubmit: form.title.trim().length > 0 && !mutation.isPending,
-    errorMessage,
+    previewUrl: imagePreview ?? feature?.image_url ?? null,
+    pickImage,
     isEdit: feature !== null,
   }
 }

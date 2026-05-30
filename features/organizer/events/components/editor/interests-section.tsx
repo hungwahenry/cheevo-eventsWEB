@@ -1,25 +1,23 @@
 "use client"
 
 import { useInterests } from "@/features/organizer/events/hooks"
+import type { EventInput } from "@/features/organizer/events/validation"
 import { cn } from "@/lib/utils"
-
-type InterestsSectionProps = {
-  selected: string[]
-  onChange: (next: string[]) => void
-}
+import type { UseFormReturn } from "react-hook-form"
 
 export function InterestsSection({
-  selected,
-  onChange,
-}: InterestsSectionProps) {
+  form,
+}: {
+  form: UseFormReturn<EventInput>
+}) {
   const { data: interests, isLoading } = useInterests()
+  const selected = form.watch("interests")
 
   const toggle = (slug: string) => {
-    onChange(
-      selected.includes(slug)
-        ? selected.filter((s) => s !== slug)
-        : [...selected, slug]
-    )
+    const next = selected.includes(slug)
+      ? selected.filter((s) => s !== slug)
+      : [...selected, slug]
+    form.setValue("interests", next, { shouldDirty: true })
   }
 
   return (

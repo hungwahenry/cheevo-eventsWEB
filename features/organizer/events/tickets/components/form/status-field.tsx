@@ -1,6 +1,6 @@
 "use client"
 
-import { Label } from "@/components/ui/label"
+import { Field, FieldError, FieldLabel } from "@/components/ui/field"
 import {
   Select,
   SelectContent,
@@ -9,25 +9,31 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import type { TicketForm } from "@/features/organizer/events/tickets/hooks"
-import type { TicketStatus } from "@/features/organizer/events/tickets/types"
+import { Controller } from "react-hook-form"
 
 export function StatusField({ form }: { form: TicketForm }) {
+  const errors = form.form.formState.errors
+
   return (
-    <div className="flex flex-col gap-2">
-      <Label htmlFor="ticket-status">Status</Label>
-      <Select
-        value={form.form.status}
-        onValueChange={(v) => form.set("status", v as TicketStatus)}
-      >
-        <SelectTrigger id="ticket-status">
-          <SelectValue />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="draft">Draft</SelectItem>
-          <SelectItem value="on_sale">On sale</SelectItem>
-          <SelectItem value="paused">Paused</SelectItem>
-        </SelectContent>
-      </Select>
-    </div>
+    <Field>
+      <FieldLabel htmlFor="ticket-status">Status</FieldLabel>
+      <Controller
+        control={form.form.control}
+        name="status"
+        render={({ field }) => (
+          <Select value={field.value} onValueChange={field.onChange}>
+            <SelectTrigger id="ticket-status">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="draft">Draft</SelectItem>
+              <SelectItem value="on_sale">On sale</SelectItem>
+              <SelectItem value="paused">Paused</SelectItem>
+            </SelectContent>
+          </Select>
+        )}
+      />
+      <FieldError errors={[errors.status]} />
+    </Field>
   )
 }

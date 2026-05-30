@@ -2,29 +2,15 @@ import {
   useCreateTicket,
   useUpdateTicket,
 } from "@/features/organizer/events/tickets/hooks/use-ticket-mutations"
-import type {
-  EventTicket,
-  TicketInput,
-  TicketStatus,
-} from "@/features/organizer/events/tickets/types"
-import { isApiError } from "@/lib/api"
+import type { EventTicket } from "@/features/organizer/events/tickets/types"
+import type { TicketInput as TicketFormValues } from "@/features/organizer/events/tickets/validation"
+import { ticketSchema } from "@/features/organizer/events/tickets/validation"
+import { applyApiErrors } from "@/lib/api"
 import { toLocalInputValue } from "@/lib/format/datetime"
 import { koboToNairaInput, nairaInputToKobo } from "@/lib/format/money"
+import { zodResolver } from "@hookform/resolvers/zod"
 import { useEffect, useState } from "react"
-
-type FormState = {
-  name: string
-  description: string
-  gross_price: string
-  display_price: string
-  quantity: string
-  status: TicketStatus
-  sales_starts_at: string
-  sales_ends_at: string
-  valid_from: string
-  valid_to: string
-  max_per_order: string
-}
+import { useForm } from "react-hook-form"
 
 type Toggles = {
   unlimited: boolean
@@ -40,23 +26,22 @@ type Options = {
   onSuccess?: () => void
 }
 
-function blankForm(): FormState {
-  return {
-    name: "",
-    description: "",
-    gross_price: "",
-    display_price: "",
-    quantity: "",
-    status: "draft",
-    sales_starts_at: "",
-    sales_ends_at: "",
-    valid_from: "",
-    valid_to: "",
-    max_per_order: "",
+function defaults(ticket: EventTicket | null): TicketFormValues {
+  if (!ticket) {
+    return {
+      name: "",
+      description: "",
+      gross_price: "",
+      display_price: "",
+      quantity: "",
+      status: "draft",
+      sales_starts_at: "",
+      sales_ends_at: "",
+      valid_from: "",
+      valid_to: "",
+      max_per_order: "",
+    }
   }
-}
-
-function fromTicket(ticket: EventTicket): FormState {
   return {
     name: ticket.name,
     description: ticket.description ?? "",
@@ -91,80 +76,69 @@ function togglesFromTicket(ticket: EventTicket | null): Toggles {
   }
 }
 
+const orNullInt = (value: string) => (value === "" ? null : parseInt(value, 10))
+
 export type TicketForm = ReturnType<typeof useTicketForm>
 
 export function useTicketForm({ eventId, ticket, isOpen, onSuccess }: Options) {
   const create = useCreateTicket(eventId)
   const update = useUpdateTicket(eventId, ticket?.id ?? "")
+  const mutation = ticket ? update : create
 
-  const [form, setForm] = useState<FormState>(() =>
-    ticket ? fromTicket(ticket) : blankForm()
-  )
+  const form = useForm<TicketFormValues>({
+    resolver: zodResolver(ticketSchema),
+    defaultValues: defaults(ticket),
+  })
+
   const [toggles, setToggles] = useState<Toggles>(() =>
     togglesFromTicket(ticket)
   )
 
   useEffect(() => {
     if (!isOpen) return
-    setForm(ticket ? fromTicket(ticket) : blankForm())
+    form.reset(defaults(ticket))
     setToggles(togglesFromTicket(ticket))
-  }, [isOpen, ticket])
-
-  const set = <K extends keyof FormState>(key: K, value: FormState[K]) =>
-    setForm((prev) => ({ ...prev, [key]: value }))
+  }, [isOpen, ticket, form])
 
   const toggle = <K extends keyof Toggles>(key: K, value: boolean) =>
     setToggles((prev) => ({ ...prev, [key]: value }))
 
-  const submit = () => {
-    const grossKobo = nairaInputToKobo(form.gross_price)
-    if (grossKobo === null) return
+  const submit = form.handleSubmit(async (values) => {
+    const gross = nairaInputToKobo(values.gross_price)
+    if (gross === null) return
 
-    const displayKobo = nairaInputToKobo(form.display_price)
-    const quantityNum = form.quantity ? parseInt(form.quantity, 10) : null
-    const maxPerOrderNum = form.max_per_order
-      ? parseInt(form.max_per_order, 10)
-      : null
-
-    const input: TicketInput = {
-      name: form.name.trim(),
-      description: form.description.trim() || null,
-      gross_price: grossKobo,
-      display_price: displayKobo,
-      quantity: toggles.unlimited ? null : quantityNum,
-      status: form.status,
-      sales_starts_at: toggles.salesWindow
-        ? form.sales_starts_at || null
-        : null,
-      sales_ends_at: toggles.salesWindow ? form.sales_ends_at || null : null,
-      valid_from: toggles.validity ? form.valid_from || null : null,
-      valid_to: toggles.validity ? form.valid_to || null : null,
-      max_per_order: toggles.perOrderLimit ? maxPerOrderNum : null,
+    try {
+      await mutation.mutateAsync({
+        name: values.name.trim(),
+        description: values.description.trim() || null,
+        gross_price: gross,
+        display_price: nairaInputToKobo(values.display_price),
+        quantity: toggles.unlimited ? null : orNullInt(values.quantity),
+        status: values.status,
+        sales_starts_at: toggles.salesWindow
+          ? values.sales_starts_at || null
+          : null,
+        sales_ends_at: toggles.salesWindow
+          ? values.sales_ends_at || null
+          : null,
+        valid_from: toggles.validity ? values.valid_from || null : null,
+        valid_to: toggles.validity ? values.valid_to || null : null,
+        max_per_order: toggles.perOrderLimit
+          ? orNullInt(values.max_per_order)
+          : null,
+      })
+      onSuccess?.()
+    } catch (error) {
+      applyApiErrors(form, error)
     }
-
-    const mutation = ticket ? update : create
-    mutation.mutate(input, { onSuccess: () => onSuccess?.() })
-  }
-
-  const mutation = ticket ? update : create
-  const errorMessage =
-    mutation.error && isApiError(mutation.error) ? mutation.error.message : null
-
-  const canSubmit =
-    form.name.trim().length > 0 &&
-    nairaInputToKobo(form.gross_price) !== null &&
-    (toggles.unlimited || form.quantity.trim() !== "") &&
-    !mutation.isPending
+  })
 
   return {
     form,
     toggles,
-    set,
     toggle,
     submit,
     isSubmitting: mutation.isPending,
-    canSubmit,
-    errorMessage,
     isEdit: ticket !== null,
   }
 }

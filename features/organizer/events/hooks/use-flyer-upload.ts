@@ -66,8 +66,8 @@ export function useFlyerUpload(
     update.mutate(toUpload, { onSuccess: () => onSuccess?.() })
   }
 
-  const errorMessage =
-    update.error && isApiError(update.error) ? update.error.message : null
+  const errorMessages =
+    update.error && isApiError(update.error) ? update.error.messages() : []
 
   return {
     file,
@@ -81,7 +81,7 @@ export function useFlyerUpload(
     pickFile,
     submit,
     isUploading: update.isPending,
-    errorMessage,
+    errorMessages,
   }
 }
 

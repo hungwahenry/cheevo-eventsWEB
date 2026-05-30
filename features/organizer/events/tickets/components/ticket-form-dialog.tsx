@@ -51,7 +51,7 @@ export function TicketFormDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="flex flex-col gap-4">
+        <form onSubmit={form.submit} className="flex flex-col gap-4">
           <BasicsFields form={form} />
           <PriceFields form={form} />
           <QuantityField form={form} />
@@ -60,31 +60,23 @@ export function TicketFormDialog({
           <ValidityField form={form} />
           <PurchaseLimitField form={form} />
 
-          {form.errorMessage ? (
-            <p className="text-sm text-destructive">{form.errorMessage}</p>
-          ) : null}
-        </div>
-
-        <DialogFooter className="gap-2">
-          <Button
-            type="button"
-            variant="ghost"
-            onClick={() => onOpenChange(false)}
-          >
-            Cancel
-          </Button>
-          <Button
-            type="button"
-            onClick={form.submit}
-            disabled={!form.canSubmit}
-          >
-            {form.isSubmitting
-              ? "Saving…"
-              : form.isEdit
-                ? "Save changes"
-                : "Add ticket"}
-          </Button>
-        </DialogFooter>
+          <DialogFooter className="gap-2">
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={() => onOpenChange(false)}
+            >
+              Cancel
+            </Button>
+            <Button type="submit" disabled={form.isSubmitting}>
+              {form.isSubmitting
+                ? "Saving…"
+                : form.isEdit
+                  ? "Save changes"
+                  : "Add ticket"}
+            </Button>
+          </DialogFooter>
+        </form>
       </DialogContent>
     </Dialog>
   )

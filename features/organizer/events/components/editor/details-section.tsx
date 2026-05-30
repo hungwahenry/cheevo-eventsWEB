@@ -1,109 +1,103 @@
 "use client"
 
 import { FieldCounter } from "@/components/field-counter"
+import { Field, FieldError, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { LocationSection } from "@/features/organizer/events/components/editor/location-section"
 import { EVENT_LIMITS } from "@/features/organizer/events/limits"
 import type { PlaceDetails } from "@/features/organizer/events/types"
-
-export type DetailsFormFields = {
-  title: string
-  description: string
-  starts_at: string
-  ends_at: string
-  venue_name: string
-  video_url: string
-  address: string
-}
+import type { EventInput } from "@/features/organizer/events/validation"
+import type { UseFormReturn } from "react-hook-form"
 
 type DetailsSectionProps = {
-  form: DetailsFormFields
-  onChange: (key: keyof DetailsFormFields, value: string) => void
+  form: UseFormReturn<EventInput>
   onPlace: (place: PlaceDetails) => void
 }
 
-export function DetailsSection({
-  form,
-  onChange,
-  onPlace,
-}: DetailsSectionProps) {
+export function DetailsSection({ form, onPlace }: DetailsSectionProps) {
+  const description = form.watch("description")
+  const address = form.watch("address")
+  const errors = form.formState.errors
+
   return (
     <section className="flex flex-col gap-4">
       <h2 className="text-sm font-medium">Details</h2>
 
-      <div className="flex flex-col gap-2">
-        <Label htmlFor="title">Title</Label>
+      <Field>
+        <FieldLabel htmlFor="title">Title</FieldLabel>
         <Input
           id="title"
-          value={form.title}
           maxLength={EVENT_LIMITS.title}
-          onChange={(event) => onChange("title", event.target.value)}
+          {...form.register("title")}
         />
-      </div>
+        <FieldError errors={[errors.title]} />
+      </Field>
 
-      <div className="flex flex-col gap-2">
-        <Label htmlFor="description">Description</Label>
+      <Field>
+        <FieldLabel htmlFor="description">Description</FieldLabel>
         <Textarea
           id="description"
           rows={4}
-          value={form.description}
           maxLength={EVENT_LIMITS.description}
-          onChange={(event) => onChange("description", event.target.value)}
           placeholder="What's the event about?"
+          {...form.register("description")}
         />
-        <FieldCounter current={form.description.length} max={EVENT_LIMITS.description} />
-      </div>
+        <FieldCounter
+          current={description.length}
+          max={EVENT_LIMITS.description}
+        />
+        <FieldError errors={[errors.description]} />
+      </Field>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <div className="flex flex-col gap-2">
-          <Label htmlFor="starts_at">Starts</Label>
+        <Field>
+          <FieldLabel htmlFor="starts_at">Starts</FieldLabel>
           <Input
             id="starts_at"
             type="datetime-local"
-            value={form.starts_at}
-            onChange={(event) => onChange("starts_at", event.target.value)}
+            {...form.register("starts_at")}
           />
-        </div>
-        <div className="flex flex-col gap-2">
-          <Label htmlFor="ends_at">Ends</Label>
+          <FieldError errors={[errors.starts_at]} />
+        </Field>
+        <Field>
+          <FieldLabel htmlFor="ends_at">Ends</FieldLabel>
           <Input
             id="ends_at"
             type="datetime-local"
-            value={form.ends_at}
-            onChange={(event) => onChange("ends_at", event.target.value)}
+            {...form.register("ends_at")}
           />
-        </div>
+          <FieldError errors={[errors.ends_at]} />
+        </Field>
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <LocationSection
-          currentAddress={form.address || null}
+          currentAddress={address || null}
           onResolved={onPlace}
         />
-        <div className="flex flex-col gap-2">
-          <Label htmlFor="venue_name">Venue name</Label>
+        <Field>
+          <FieldLabel htmlFor="venue_name">Venue name</FieldLabel>
           <Input
             id="venue_name"
-            value={form.venue_name}
             maxLength={EVENT_LIMITS.venueName}
-            onChange={(event) => onChange("venue_name", event.target.value)}
             placeholder="e.g. Eko Hotel"
+            {...form.register("venue_name")}
           />
-        </div>
+          <FieldError errors={[errors.venue_name]} />
+        </Field>
       </div>
 
-      <div className="flex flex-col gap-2">
-        <Label htmlFor="video_url">Promo video URL</Label>
+      <Field>
+        <FieldLabel htmlFor="video_url">Promo video URL</FieldLabel>
         <Input
           id="video_url"
-          value={form.video_url}
           maxLength={EVENT_LIMITS.videoUrl}
-          onChange={(event) => onChange("video_url", event.target.value)}
           placeholder="https://… (YouTube, IG, TikTok)"
+          {...form.register("video_url")}
         />
-      </div>
+        <FieldError errors={[errors.video_url]} />
+      </Field>
     </section>
   )
 }

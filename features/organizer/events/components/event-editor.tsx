@@ -23,28 +23,80 @@ import {
   useUpdateEvent,
 } from "@/features/organizer/events/hooks"
 import type { EventItem, PlaceDetails } from "@/features/organizer/events/types"
-import { isApiError } from "@/lib/api"
+import type { EventInput } from "@/features/organizer/events/validation"
+import { eventSchema } from "@/features/organizer/events/validation"
+import { applyApiErrors, isApiError } from "@/lib/api"
 import { toLocalInputValue } from "@/lib/format/datetime"
+import { zodResolver } from "@hookform/resolvers/zod"
 import { useState } from "react"
+import { useForm } from "react-hook-form"
 
-type FormState = {
-  title: string
-  description: string
-  starts_at: string
-  ends_at: string
-  venue_name: string
-  video_url: string
-  place_id: string
-  address: string
-  latitude: string
-  longitude: string
-  city: string
+function defaults(event: EventItem): EventInput {
+  return {
+    title: event.title,
+    description: event.description ?? "",
+    starts_at: toLocalInputValue(event.starts_at),
+    ends_at: toLocalInputValue(event.ends_at),
+    venue_name: event.venue_name ?? "",
+    video_url: event.video_url ?? "",
+    place_id: event.place_id ?? "",
+    address: event.address ?? "",
+    latitude: event.latitude ?? "",
+    longitude: event.longitude ?? "",
+    city: event.city ?? "",
+    interests: event.interests?.map((i) => i.slug) ?? [],
+  }
 }
 
 export function EventEditor({ event }: { event: EventItem }) {
   const update = useUpdateEvent(event.id)
   const publish = usePublishEvent(event.id)
   const [confirmOpen, setConfirmOpen] = useState(false)
+
+  const form = useForm<EventInput>({
+    resolver: zodResolver(eventSchema),
+    defaultValues: defaults(event),
+  })
+
+  const save = form.handleSubmit(async (values) => {
+    try {
+      await update.mutateAsync({
+        title: values.title.trim(),
+        description: values.description.trim() || null,
+        starts_at: values.starts_at || null,
+        ends_at: values.ends_at || null,
+        venue_name: values.venue_name.trim() || null,
+        video_url: values.video_url || null,
+        place_id: values.place_id || null,
+        address: values.address || null,
+        latitude: values.latitude || null,
+        longitude: values.longitude || null,
+        city: values.city || null,
+        interests: values.interests,
+      })
+    } catch (error) {
+      applyApiErrors(form, error)
+    }
+  })
+
+  const applyPlace = (place: PlaceDetails) => {
+    form.setValue("place_id", place.place_id, { shouldDirty: true })
+    form.setValue("address", place.address ?? "", { shouldDirty: true })
+    form.setValue(
+      "latitude",
+      place.latitude !== null ? String(place.latitude) : "",
+      { shouldDirty: true }
+    )
+    form.setValue(
+      "longitude",
+      place.longitude !== null ? String(place.longitude) : "",
+      { shouldDirty: true }
+    )
+    form.setValue("city", place.city ?? "", { shouldDirty: true })
+    if (!form.getValues("venue_name") && place.name) {
+      form.setValue("venue_name", place.name, { shouldDirty: true })
+    }
+  }
 
   const requestPublish = () => {
     if (event.tickets_count === 0) {
@@ -59,59 +111,9 @@ export function EventEditor({ event }: { event: EventItem }) {
     publish.mutate()
   }
 
-  const [form, setForm] = useState<FormState>({
-    title: event.title,
-    description: event.description ?? "",
-    starts_at: toLocalInputValue(event.starts_at),
-    ends_at: toLocalInputValue(event.ends_at),
-    venue_name: event.venue_name ?? "",
-    video_url: event.video_url ?? "",
-    place_id: event.place_id ?? "",
-    address: event.address ?? "",
-    latitude: event.latitude ?? "",
-    longitude: event.longitude ?? "",
-    city: event.city ?? "",
-  })
-
-  const [interestSlugs, setInterestSlugs] = useState<string[]>(
-    () => event.interests?.map((i) => i.slug) ?? []
-  )
-
-  const set = (key: keyof FormState, value: string) =>
-    setForm((prev) => ({ ...prev, [key]: value }))
-
-  const applyPlace = (place: PlaceDetails) => {
-    setForm((prev) => ({
-      ...prev,
-      place_id: place.place_id,
-      address: place.address ?? "",
-      latitude: place.latitude !== null ? String(place.latitude) : "",
-      longitude: place.longitude !== null ? String(place.longitude) : "",
-      city: place.city ?? "",
-      venue_name: prev.venue_name || (place.name ?? ""),
-    }))
-  }
-
-  const save = () =>
-    update.mutate({
-      title: form.title,
-      description: form.description || null,
-      starts_at: form.starts_at || null,
-      ends_at: form.ends_at || null,
-      venue_name: form.venue_name || null,
-      video_url: form.video_url || null,
-      place_id: form.place_id || null,
-      address: form.address || null,
-      latitude: form.latitude || null,
-      longitude: form.longitude || null,
-      city: form.city || null,
-      interests: interestSlugs,
-    })
-
-  const publishErrors =
-    publish.error && isApiError(publish.error) && publish.error.isValidation
-      ? Object.values(publish.error.fieldErrors())
-      : []
+  const publishErrors = isApiError(publish.error)
+    ? publish.error.messages()
+    : []
 
   return (
     <div className="flex flex-col">
@@ -149,11 +151,8 @@ export function EventEditor({ event }: { event: EventItem }) {
         </aside>
 
         <div className="order-2 flex flex-col gap-10 lg:order-1 lg:col-span-2">
-          <DetailsSection form={form} onChange={set} onPlace={applyPlace} />
-          <InterestsSection
-            selected={interestSlugs}
-            onChange={setInterestSlugs}
-          />
+          <DetailsSection form={form} onPlace={applyPlace} />
+          <InterestsSection form={form} />
           <TicketsSection event={event} />
           <GallerySection event={event} />
           <FeaturesSection event={event} />

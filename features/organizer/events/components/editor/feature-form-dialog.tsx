@@ -10,8 +10,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
+import { Field, FieldError, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { useFeatureForm } from "@/features/organizer/events/hooks"
 import { EVENT_FEATURE_LIMITS } from "@/features/organizer/events/limits"
@@ -34,55 +34,56 @@ export function FeatureFormDialog({
   open,
   onOpenChange,
 }: FeatureFormDialogProps) {
-  const form = useFeatureForm({
-    eventId,
-    feature,
-    isOpen: open,
-    onSuccess: () => onOpenChange(false),
-  })
+  const { form, submit, isSubmitting, previewUrl, pickImage, isEdit } =
+    useFeatureForm({
+      eventId,
+      feature,
+      isOpen: open,
+      onSuccess: () => onOpenChange(false),
+    })
   const inputRef = useRef<HTMLInputElement>(null)
+  const description = form.watch("description")
+  const errors = form.formState.errors
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle>
-            {form.isEdit ? "Edit feature" : "Add feature"}
-          </DialogTitle>
+          <DialogTitle>{isEdit ? "Edit feature" : "Add feature"}</DialogTitle>
           <DialogDescription>
             Highlight something special about your event.
           </DialogDescription>
         </DialogHeader>
 
-        <div className="flex flex-col gap-4">
+        <form onSubmit={submit} className="flex flex-col gap-4">
           <div className="flex items-end gap-3">
             <button
               type="button"
               onClick={() => inputRef.current?.click()}
-              aria-label={form.previewUrl ? "Change image" : "Upload image"}
+              aria-label={previewUrl ? "Change image" : "Upload image"}
               className="group relative flex size-16 shrink-0 items-center justify-center overflow-hidden rounded-lg border bg-muted text-muted-foreground hover:bg-muted/70"
             >
-              {form.previewUrl ? (
+              {previewUrl ? (
                 <img
-                  src={form.previewUrl}
+                  src={previewUrl}
                   alt=""
                   className="size-full object-cover transition group-hover:opacity-70"
                 />
               ) : null}
               <UploadIcon
-                className={`absolute size-4 ${form.previewUrl ? "text-background opacity-0 transition group-hover:opacity-100" : ""}`}
+                className={`absolute size-4 ${previewUrl ? "text-background opacity-0 transition group-hover:opacity-100" : ""}`}
               />
             </button>
-            <div className="flex flex-1 flex-col gap-2">
-              <Label htmlFor="feature-title">Title</Label>
+            <Field>
+              <FieldLabel htmlFor="feature-title">Title</FieldLabel>
               <Input
                 id="feature-title"
-                value={form.form.title}
                 maxLength={EVENT_FEATURE_LIMITS.title}
-                onChange={(event) => form.set("title", event.target.value)}
                 placeholder="e.g. Live DJ set"
+                {...form.register("title")}
               />
-            </div>
+              <FieldError errors={[errors.title]} />
+            </Field>
           </div>
 
           <input
@@ -92,84 +93,76 @@ export function FeatureFormDialog({
             className="hidden"
             onChange={(event) => {
               const picked = event.target.files?.[0]
-              if (picked) form.pickImage(picked)
+              if (picked) pickImage(picked)
               event.target.value = ""
             }}
           />
 
-          <div className="flex flex-col gap-2">
-            <Label htmlFor="feature-description">Description</Label>
+          <Field>
+            <FieldLabel htmlFor="feature-description">Description</FieldLabel>
             <Textarea
               id="feature-description"
               rows={3}
-              value={form.form.description}
               maxLength={EVENT_FEATURE_LIMITS.description}
-              onChange={(event) => form.set("description", event.target.value)}
               placeholder="A short detail about this feature."
+              {...form.register("description")}
             />
             <FieldCounter
-              current={form.form.description.length}
+              current={description.length}
               max={EVENT_FEATURE_LIMITS.description}
             />
-          </div>
+            <FieldError errors={[errors.description]} />
+          </Field>
 
-          <div className="flex flex-col gap-2">
-            <Label htmlFor="feature-link">Link</Label>
+          <Field>
+            <FieldLabel htmlFor="feature-link">Link</FieldLabel>
             <Input
               id="feature-link"
-              value={form.form.link}
               maxLength={EVENT_FEATURE_LIMITS.link}
-              onChange={(event) => form.set("link", event.target.value)}
               placeholder="https://…"
+              {...form.register("link")}
             />
-          </div>
+            <FieldError errors={[errors.link]} />
+          </Field>
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="feature-starts">Starts</Label>
+            <Field>
+              <FieldLabel htmlFor="feature-starts">Starts</FieldLabel>
               <Input
                 id="feature-starts"
                 type="datetime-local"
-                value={form.form.starts_at}
-                onChange={(event) => form.set("starts_at", event.target.value)}
+                {...form.register("starts_at")}
               />
-            </div>
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="feature-ends">Ends</Label>
+              <FieldError errors={[errors.starts_at]} />
+            </Field>
+            <Field>
+              <FieldLabel htmlFor="feature-ends">Ends</FieldLabel>
               <Input
                 id="feature-ends"
                 type="datetime-local"
-                value={form.form.ends_at}
-                onChange={(event) => form.set("ends_at", event.target.value)}
+                {...form.register("ends_at")}
               />
-            </div>
+              <FieldError errors={[errors.ends_at]} />
+            </Field>
           </div>
 
-          {form.errorMessage ? (
-            <p className="text-sm text-destructive">{form.errorMessage}</p>
-          ) : null}
-        </div>
-
-        <DialogFooter className="gap-2">
-          <Button
-            type="button"
-            variant="ghost"
-            onClick={() => onOpenChange(false)}
-          >
-            Cancel
-          </Button>
-          <Button
-            type="button"
-            onClick={form.submit}
-            disabled={!form.canSubmit}
-          >
-            {form.isSubmitting
-              ? "Saving…"
-              : form.isEdit
-                ? "Save changes"
-                : "Add feature"}
-          </Button>
-        </DialogFooter>
+          <DialogFooter className="gap-2">
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={() => onOpenChange(false)}
+            >
+              Cancel
+            </Button>
+            <Button type="submit" disabled={isSubmitting}>
+              {isSubmitting
+                ? "Saving…"
+                : isEdit
+                  ? "Save changes"
+                  : "Add feature"}
+            </Button>
+          </DialogFooter>
+        </form>
       </DialogContent>
     </Dialog>
   )

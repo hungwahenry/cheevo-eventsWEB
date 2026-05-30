@@ -33,6 +33,14 @@ export class ApiError extends Error {
       ])
     )
   }
+
+  messages(): string[] {
+    if (this.isValidation) {
+      const field = Object.values(this.fieldErrors())
+      if (field.length > 0) return field
+    }
+    return [this.message]
+  }
 }
 
 export function isApiError(error: unknown): error is ApiError {

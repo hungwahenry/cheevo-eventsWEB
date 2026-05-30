@@ -1,5 +1,6 @@
 "use client"
 
+import { FormErrors } from "@/components/form-errors"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -91,9 +92,7 @@ export function FlyerUploadDialog({
           }}
         />
 
-        {flyer.errorMessage ? (
-          <p className="text-sm text-destructive">{flyer.errorMessage}</p>
-        ) : null}
+        <FormErrors messages={flyer.errorMessages} />
 
         <DialogFooter className="gap-2">
           {flyer.src ? (

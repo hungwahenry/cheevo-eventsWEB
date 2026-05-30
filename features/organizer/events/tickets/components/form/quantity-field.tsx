@@ -1,11 +1,13 @@
 "use client"
 
+import { Field, FieldError, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 import type { TicketForm } from "@/features/organizer/events/tickets/hooks"
 
 export function QuantityField({ form }: { form: TicketForm }) {
+  const errors = form.form.formState.errors
+
   return (
     <div className="flex flex-col gap-3 rounded-xl border p-3">
       <div className="flex items-center justify-between gap-3">
@@ -21,17 +23,17 @@ export function QuantityField({ form }: { form: TicketForm }) {
         />
       </div>
       {!form.toggles.unlimited ? (
-        <div className="flex flex-col gap-2">
-          <Label htmlFor="ticket-quantity">Quantity</Label>
+        <Field>
+          <FieldLabel htmlFor="ticket-quantity">Quantity</FieldLabel>
           <Input
             id="ticket-quantity"
             inputMode="numeric"
             maxLength={6}
-            value={form.form.quantity}
-            onChange={(e) => form.set("quantity", e.target.value)}
             placeholder="100"
+            {...form.form.register("quantity")}
           />
-        </div>
+          <FieldError errors={[errors.quantity]} />
+        </Field>
       ) : null}
     </div>
   )

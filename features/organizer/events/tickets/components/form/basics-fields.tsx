@@ -1,41 +1,44 @@
 "use client"
 
 import { FieldCounter } from "@/components/field-counter"
+import { Field, FieldError, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import type { TicketForm } from "@/features/organizer/events/tickets/hooks"
 import { TICKET_LIMITS } from "@/features/organizer/events/tickets/limits"
 
 export function BasicsFields({ form }: { form: TicketForm }) {
+  const description = form.form.watch("description")
+  const errors = form.form.formState.errors
+
   return (
     <>
-      <div className="flex flex-col gap-2">
-        <Label htmlFor="ticket-name">Name</Label>
+      <Field>
+        <FieldLabel htmlFor="ticket-name">Name</FieldLabel>
         <Input
           id="ticket-name"
-          value={form.form.name}
           maxLength={TICKET_LIMITS.name}
-          onChange={(e) => form.set("name", e.target.value)}
           placeholder="e.g. Early Bird"
+          {...form.form.register("name")}
         />
-      </div>
+        <FieldError errors={[errors.name]} />
+      </Field>
 
-      <div className="flex flex-col gap-2">
-        <Label htmlFor="ticket-description">Description</Label>
+      <Field>
+        <FieldLabel htmlFor="ticket-description">Description</FieldLabel>
         <Textarea
           id="ticket-description"
           rows={3}
-          value={form.form.description}
           maxLength={TICKET_LIMITS.description}
-          onChange={(e) => form.set("description", e.target.value)}
           placeholder="What's included with this ticket?"
+          {...form.form.register("description")}
         />
         <FieldCounter
-          current={form.form.description.length}
+          current={description.length}
           max={TICKET_LIMITS.description}
         />
-      </div>
+        <FieldError errors={[errors.description]} />
+      </Field>
     </>
   )
 }

@@ -40,7 +40,6 @@ export function BrandingHeader({
         className="relative block h-40 w-full overflow-hidden rounded-xl border bg-muted"
       >
         {coverPreview ? (
-          // eslint-disable-next-line @next/next/no-img-element
           <img src={coverPreview} alt="" className="size-full object-cover" />
         ) : null}
         <span className="absolute top-3 right-3 flex items-center gap-1.5 rounded-full border bg-background/85 px-3 py-1.5 text-xs font-medium text-foreground">

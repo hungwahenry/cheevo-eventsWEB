@@ -25,7 +25,10 @@ export function DetailsStep({ wizard }: { wizard: OrganizerOnboarding }) {
           rows={4}
           placeholder="Tell attendees what your events are about…"
         />
-        <FieldCounter current={draft.about.length} max={ORGANISATION_LIMITS.about} />
+        <FieldCounter
+          current={draft.about.length}
+          max={ORGANISATION_LIMITS.about}
+        />
       </Field>
 
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
