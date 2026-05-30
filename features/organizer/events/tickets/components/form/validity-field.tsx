@@ -21,6 +21,7 @@ export function ValidityField({ form }: { form: TicketForm }) {
           <Input
             id="ticket-valid-from"
             type="datetime-local"
+            aria-invalid={!!errors.valid_from}
             {...form.form.register("valid_from")}
           />
           <FieldError errors={[errors.valid_from]} />
@@ -30,6 +31,7 @@ export function ValidityField({ form }: { form: TicketForm }) {
           <Input
             id="ticket-valid-to"
             type="datetime-local"
+            aria-invalid={!!errors.valid_to}
             {...form.form.register("valid_to")}
           />
           <FieldError errors={[errors.valid_to]} />

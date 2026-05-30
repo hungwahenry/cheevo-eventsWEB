@@ -29,6 +29,7 @@ export function DetailsSection({ form, onPlace }: DetailsSectionProps) {
         <Input
           id="title"
           maxLength={EVENT_LIMITS.title}
+          aria-invalid={!!errors.title}
           {...form.register("title")}
         />
         <FieldError errors={[errors.title]} />
@@ -41,6 +42,7 @@ export function DetailsSection({ form, onPlace }: DetailsSectionProps) {
           rows={4}
           maxLength={EVENT_LIMITS.description}
           placeholder="What's the event about?"
+          aria-invalid={!!errors.description}
           {...form.register("description")}
         />
         <FieldCounter
@@ -56,6 +58,7 @@ export function DetailsSection({ form, onPlace }: DetailsSectionProps) {
           <Input
             id="starts_at"
             type="datetime-local"
+            aria-invalid={!!errors.starts_at}
             {...form.register("starts_at")}
           />
           <FieldError errors={[errors.starts_at]} />
@@ -65,6 +68,7 @@ export function DetailsSection({ form, onPlace }: DetailsSectionProps) {
           <Input
             id="ends_at"
             type="datetime-local"
+            aria-invalid={!!errors.ends_at}
             {...form.register("ends_at")}
           />
           <FieldError errors={[errors.ends_at]} />
@@ -82,6 +86,7 @@ export function DetailsSection({ form, onPlace }: DetailsSectionProps) {
             id="venue_name"
             maxLength={EVENT_LIMITS.venueName}
             placeholder="e.g. Eko Hotel"
+            aria-invalid={!!errors.venue_name}
             {...form.register("venue_name")}
           />
           <FieldError errors={[errors.venue_name]} />
@@ -94,6 +99,7 @@ export function DetailsSection({ form, onPlace }: DetailsSectionProps) {
           id="video_url"
           maxLength={EVENT_LIMITS.videoUrl}
           placeholder="https://… (YouTube, IG, TikTok)"
+          aria-invalid={!!errors.video_url}
           {...form.register("video_url")}
         />
         <FieldError errors={[errors.video_url]} />

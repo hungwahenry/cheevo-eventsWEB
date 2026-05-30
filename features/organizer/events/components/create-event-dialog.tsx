@@ -76,6 +76,7 @@ export function CreateEventDialog() {
               maxLength={EVENT_LIMITS.title}
               placeholder="e.g. Detty December"
               autoFocus
+              aria-invalid={!!form.formState.errors.title}
               {...form.register("title")}
             />
             <FieldError errors={[form.formState.errors.title]} />

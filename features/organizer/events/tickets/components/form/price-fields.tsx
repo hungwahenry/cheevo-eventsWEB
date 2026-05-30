@@ -24,6 +24,7 @@ export function PriceFields({ form }: { form: TicketForm }) {
             inputMode="numeric"
             maxLength={NAIRA_DIGITS}
             placeholder="5000"
+            aria-invalid={!!errors.gross_price}
             {...form.form.register("gross_price")}
           />
         </InputGroup>
@@ -40,6 +41,7 @@ export function PriceFields({ form }: { form: TicketForm }) {
             inputMode="numeric"
             maxLength={NAIRA_DIGITS}
             placeholder="7000"
+            aria-invalid={!!errors.display_price}
             {...form.form.register("display_price")}
           />
         </InputGroup>

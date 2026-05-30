@@ -80,6 +80,7 @@ export function FeatureFormDialog({
                 id="feature-title"
                 maxLength={EVENT_FEATURE_LIMITS.title}
                 placeholder="e.g. Live DJ set"
+                aria-invalid={!!errors.title}
                 {...form.register("title")}
               />
               <FieldError errors={[errors.title]} />
@@ -105,6 +106,7 @@ export function FeatureFormDialog({
               rows={3}
               maxLength={EVENT_FEATURE_LIMITS.description}
               placeholder="A short detail about this feature."
+              aria-invalid={!!errors.description}
               {...form.register("description")}
             />
             <FieldCounter
@@ -120,6 +122,7 @@ export function FeatureFormDialog({
               id="feature-link"
               maxLength={EVENT_FEATURE_LIMITS.link}
               placeholder="https://…"
+              aria-invalid={!!errors.link}
               {...form.register("link")}
             />
             <FieldError errors={[errors.link]} />
@@ -131,6 +134,7 @@ export function FeatureFormDialog({
               <Input
                 id="feature-starts"
                 type="datetime-local"
+                aria-invalid={!!errors.starts_at}
                 {...form.register("starts_at")}
               />
               <FieldError errors={[errors.starts_at]} />
@@ -140,6 +144,7 @@ export function FeatureFormDialog({
               <Input
                 id="feature-ends"
                 type="datetime-local"
+                aria-invalid={!!errors.ends_at}
                 {...form.register("ends_at")}
               />
               <FieldError errors={[errors.ends_at]} />

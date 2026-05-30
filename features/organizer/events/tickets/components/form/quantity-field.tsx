@@ -30,6 +30,7 @@ export function QuantityField({ form }: { form: TicketForm }) {
             inputMode="numeric"
             maxLength={6}
             placeholder="100"
+            aria-invalid={!!errors.quantity}
             {...form.form.register("quantity")}
           />
           <FieldError errors={[errors.quantity]} />

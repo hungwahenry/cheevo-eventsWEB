@@ -19,6 +19,7 @@ export function BasicsFields({ form }: { form: TicketForm }) {
           id="ticket-name"
           maxLength={TICKET_LIMITS.name}
           placeholder="e.g. Early Bird"
+          aria-invalid={!!errors.name}
           {...form.form.register("name")}
         />
         <FieldError errors={[errors.name]} />
@@ -31,6 +32,7 @@ export function BasicsFields({ form }: { form: TicketForm }) {
           rows={3}
           maxLength={TICKET_LIMITS.description}
           placeholder="What's included with this ticket?"
+          aria-invalid={!!errors.description}
           {...form.form.register("description")}
         />
         <FieldCounter

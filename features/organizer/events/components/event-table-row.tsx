@@ -43,11 +43,21 @@ export function EventTableRow({ event }: { event: EventItem }) {
           <Link href={href} className="flex items-center gap-3">
             <div className="relative h-12 w-[2.4rem] shrink-0 overflow-hidden rounded bg-muted">
               {event.flyer_url ? (
-                <img
-                  src={event.flyer_url}
-                  alt=""
-                  className="size-full object-cover"
-                />
+                event.flyer_type === "video" ? (
+                  <video
+                    src={`${event.flyer_url}#t=0.1`}
+                    muted
+                    playsInline
+                    preload="metadata"
+                    className="size-full object-cover"
+                  />
+                ) : (
+                  <img
+                    src={event.flyer_url}
+                    alt=""
+                    className="size-full object-cover"
+                  />
+                )
               ) : (
                 <div className="flex size-full items-center justify-center text-muted-foreground">
                   <ImageIcon className="size-3.5" />

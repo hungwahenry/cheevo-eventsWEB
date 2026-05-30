@@ -22,6 +22,7 @@ export function PurchaseLimitField({ form }: { form: TicketForm }) {
           inputMode="numeric"
           maxLength={3}
           placeholder="4"
+          aria-invalid={!!errors.max_per_order}
           {...form.form.register("max_per_order")}
         />
         <FieldError errors={[errors.max_per_order]} />

@@ -22,7 +22,7 @@ export function StatusField({ form }: { form: TicketForm }) {
         name="status"
         render={({ field }) => (
           <Select value={field.value} onValueChange={field.onChange}>
-            <SelectTrigger id="ticket-status">
+            <SelectTrigger id="ticket-status" aria-invalid={!!errors.status}>
               <SelectValue />
             </SelectTrigger>
             <SelectContent>

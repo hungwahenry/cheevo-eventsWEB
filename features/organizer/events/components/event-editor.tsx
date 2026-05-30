@@ -28,8 +28,22 @@ import { eventSchema } from "@/features/organizer/events/validation"
 import { applyApiErrors, isApiError } from "@/lib/api"
 import { toLocalInputValue } from "@/lib/format/datetime"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
+
+const FORM_FIELDS = [
+  "title",
+  "description",
+  "starts_at",
+  "ends_at",
+  "venue_name",
+  "address",
+  "city",
+  "video_url",
+  "interests",
+] as const
+
+type FormFieldName = (typeof FORM_FIELDS)[number]
 
 function defaults(event: EventItem): EventInput {
   return {
@@ -111,9 +125,27 @@ export function EventEditor({ event }: { event: EventItem }) {
     publish.mutate()
   }
 
-  const publishErrors = isApiError(publish.error)
-    ? publish.error.messages()
-    : []
+  useEffect(() => {
+    if (!isApiError(publish.error) || !publish.error.isValidation) return
+    for (const [key, message] of Object.entries(publish.error.fieldErrors())) {
+      if ((FORM_FIELDS as readonly string[]).includes(key)) {
+        form.setError(key as FormFieldName, { type: "server", message })
+      } else if (key === "location") {
+        form.setError("venue_name", { type: "server", message })
+      }
+    }
+  }, [publish.error, form])
+
+  const publishErrors = (() => {
+    if (!isApiError(publish.error)) return []
+    if (!publish.error.isValidation) return [publish.error.message]
+    return Object.entries(publish.error.fieldErrors())
+      .filter(
+        ([key]) =>
+          !(FORM_FIELDS as readonly string[]).includes(key) && key !== "location"
+      )
+      .map(([, message]) => message)
+  })()
 
   return (
     <div className="flex flex-col">

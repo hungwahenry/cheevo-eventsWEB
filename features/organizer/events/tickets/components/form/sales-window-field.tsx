@@ -21,6 +21,7 @@ export function SalesWindowField({ form }: { form: TicketForm }) {
           <Input
             id="ticket-sales-from"
             type="datetime-local"
+            aria-invalid={!!errors.sales_starts_at}
             {...form.form.register("sales_starts_at")}
           />
           <FieldError errors={[errors.sales_starts_at]} />
@@ -30,6 +31,7 @@ export function SalesWindowField({ form }: { form: TicketForm }) {
           <Input
             id="ticket-sales-to"
             type="datetime-local"
+            aria-invalid={!!errors.sales_ends_at}
             {...form.form.register("sales_ends_at")}
           />
           <FieldError errors={[errors.sales_ends_at]} />
