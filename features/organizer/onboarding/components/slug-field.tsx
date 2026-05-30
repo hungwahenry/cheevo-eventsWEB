@@ -1,6 +1,7 @@
 "use client"
 
 import { Input } from "@/components/ui/input"
+import { ORGANISATION_LIMITS } from "@/features/organizer/onboarding/limits"
 import { CheckIcon, Loader2Icon, XIcon } from "lucide-react"
 
 type SlugStatus = {
@@ -22,6 +23,7 @@ export function SlugField({ value, onChange, status }: SlugFieldProps) {
         <Input
           id="slug"
           value={value}
+          maxLength={ORGANISATION_LIMITS.slug.max}
           onChange={(event) => onChange(event.target.value)}
           placeholder="lagos-nightlife"
           autoCapitalize="none"

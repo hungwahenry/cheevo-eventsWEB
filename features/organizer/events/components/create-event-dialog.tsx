@@ -13,6 +13,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useCreateEvent } from "@/features/organizer/events/hooks"
+import { EVENT_LIMITS } from "@/features/organizer/events/limits"
 import { PlusIcon } from "lucide-react"
 import { useState } from "react"
 
@@ -47,6 +48,7 @@ export function CreateEventDialog() {
           <Input
             id="event-title"
             value={title}
+            maxLength={EVENT_LIMITS.title}
             onChange={(event) => setTitle(event.target.value)}
             onKeyDown={(event) => event.key === "Enter" && submit()}
             placeholder="e.g. Detty December"

@@ -1,9 +1,11 @@
 "use client"
 
+import { FieldCounter } from "@/components/field-counter"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import type { TicketForm } from "@/features/organizer/events/tickets/hooks"
+import { TICKET_LIMITS } from "@/features/organizer/events/tickets/limits"
 
 export function BasicsFields({ form }: { form: TicketForm }) {
   return (
@@ -13,6 +15,7 @@ export function BasicsFields({ form }: { form: TicketForm }) {
         <Input
           id="ticket-name"
           value={form.form.name}
+          maxLength={TICKET_LIMITS.name}
           onChange={(e) => form.set("name", e.target.value)}
           placeholder="e.g. Early Bird"
         />
@@ -24,8 +27,13 @@ export function BasicsFields({ form }: { form: TicketForm }) {
           id="ticket-description"
           rows={3}
           value={form.form.description}
+          maxLength={TICKET_LIMITS.description}
           onChange={(e) => form.set("description", e.target.value)}
           placeholder="What's included with this ticket?"
+        />
+        <FieldCounter
+          current={form.form.description.length}
+          max={TICKET_LIMITS.description}
         />
       </div>
     </>

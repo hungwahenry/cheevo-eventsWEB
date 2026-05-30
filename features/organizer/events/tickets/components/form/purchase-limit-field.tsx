@@ -18,6 +18,7 @@ export function PurchaseLimitField({ form }: { form: TicketForm }) {
         <Input
           id="ticket-max"
           inputMode="numeric"
+          maxLength={3}
           value={form.form.max_per_order}
           onChange={(e) => form.set("max_per_order", e.target.value)}
           placeholder="4"

@@ -1,5 +1,6 @@
 "use client"
 
+import { FieldCounter } from "@/components/field-counter"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -13,6 +14,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { useFeatureForm } from "@/features/organizer/events/hooks"
+import { EVENT_FEATURE_LIMITS } from "@/features/organizer/events/limits"
 import type { EventFeature } from "@/features/organizer/events/types"
 import { UploadIcon } from "lucide-react"
 import { useRef } from "react"
@@ -76,6 +78,7 @@ export function FeatureFormDialog({
               <Input
                 id="feature-title"
                 value={form.form.title}
+                maxLength={EVENT_FEATURE_LIMITS.title}
                 onChange={(event) => form.set("title", event.target.value)}
                 placeholder="e.g. Live DJ set"
               />
@@ -100,8 +103,13 @@ export function FeatureFormDialog({
               id="feature-description"
               rows={3}
               value={form.form.description}
+              maxLength={EVENT_FEATURE_LIMITS.description}
               onChange={(event) => form.set("description", event.target.value)}
               placeholder="A short detail about this feature."
+            />
+            <FieldCounter
+              current={form.form.description.length}
+              max={EVENT_FEATURE_LIMITS.description}
             />
           </div>
 
@@ -110,6 +118,7 @@ export function FeatureFormDialog({
             <Input
               id="feature-link"
               value={form.form.link}
+              maxLength={EVENT_FEATURE_LIMITS.link}
               onChange={(event) => form.set("link", event.target.value)}
               placeholder="https://…"
             />

@@ -1,9 +1,11 @@
 "use client"
 
+import { FieldCounter } from "@/components/field-counter"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { LocationSection } from "@/features/organizer/events/components/editor/location-section"
+import { EVENT_LIMITS } from "@/features/organizer/events/limits"
 import type { PlaceDetails } from "@/features/organizer/events/types"
 
 export type DetailsFormFields = {
@@ -36,6 +38,7 @@ export function DetailsSection({
         <Input
           id="title"
           value={form.title}
+          maxLength={EVENT_LIMITS.title}
           onChange={(event) => onChange("title", event.target.value)}
         />
       </div>
@@ -46,9 +49,11 @@ export function DetailsSection({
           id="description"
           rows={4}
           value={form.description}
+          maxLength={EVENT_LIMITS.description}
           onChange={(event) => onChange("description", event.target.value)}
           placeholder="What's the event about?"
         />
+        <FieldCounter current={form.description.length} max={EVENT_LIMITS.description} />
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -82,6 +87,7 @@ export function DetailsSection({
           <Input
             id="venue_name"
             value={form.venue_name}
+            maxLength={EVENT_LIMITS.venueName}
             onChange={(event) => onChange("venue_name", event.target.value)}
             placeholder="e.g. Eko Hotel"
           />
@@ -93,6 +99,7 @@ export function DetailsSection({
         <Input
           id="video_url"
           value={form.video_url}
+          maxLength={EVENT_LIMITS.videoUrl}
           onChange={(event) => onChange("video_url", event.target.value)}
           placeholder="https://… (YouTube, IG, TikTok)"
         />

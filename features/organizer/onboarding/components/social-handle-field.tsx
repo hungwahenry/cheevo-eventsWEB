@@ -7,6 +7,7 @@ import {
   InputGroupInput,
   InputGroupText,
 } from "@/components/ui/input-group"
+import { ORGANISATION_LIMITS } from "@/features/organizer/onboarding/limits"
 import type { SocialPlatform } from "@/features/organizer/onboarding/types"
 import { normalizeSocialHandle } from "@/features/organizer/onboarding/validation"
 
@@ -29,6 +30,7 @@ export function SocialHandleField({
     return (
       <Input
         value={value}
+        maxLength={ORGANISATION_LIMITS.socialHandle}
         onChange={(event) => onChange(event.target.value)}
         placeholder="https://your-site.com"
         inputMode="url"
@@ -45,6 +47,7 @@ export function SocialHandleField({
       </InputGroupAddon>
       <InputGroupInput
         value={value}
+        maxLength={ORGANISATION_LIMITS.socialHandle}
         onChange={(event) =>
           onChange(
             normalizeSocialHandle(event.target.value, platform.base_url!)

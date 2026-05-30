@@ -11,6 +11,7 @@ import {
 import { Field } from "@/features/organizer/onboarding/components/field"
 import { SlugField } from "@/features/organizer/onboarding/components/slug-field"
 import type { OrganizerOnboarding } from "@/features/organizer/onboarding/hooks"
+import { ORGANISATION_LIMITS } from "@/features/organizer/onboarding/limits"
 
 export function BasicsStep({ wizard }: { wizard: OrganizerOnboarding }) {
   const { draft, patch, errors, categories, slugStatus } = wizard
@@ -21,6 +22,7 @@ export function BasicsStep({ wizard }: { wizard: OrganizerOnboarding }) {
         <Input
           id="name"
           value={draft.name}
+          maxLength={ORGANISATION_LIMITS.name}
           onChange={(event) => patch({ name: event.target.value })}
           placeholder="e.g. Lagos Nightlife"
           autoFocus

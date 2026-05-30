@@ -1,9 +1,11 @@
 "use client"
 
+import { FieldCounter } from "@/components/field-counter"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Field } from "@/features/organizer/onboarding/components/field"
 import type { OrganizerOnboarding } from "@/features/organizer/onboarding/hooks"
+import { ORGANISATION_LIMITS } from "@/features/organizer/onboarding/limits"
 
 export function DetailsStep({ wizard }: { wizard: OrganizerOnboarding }) {
   const { draft, patch, errors } = wizard
@@ -18,10 +20,12 @@ export function DetailsStep({ wizard }: { wizard: OrganizerOnboarding }) {
         <Textarea
           id="about"
           value={draft.about}
+          maxLength={ORGANISATION_LIMITS.about}
           onChange={(event) => patch({ about: event.target.value })}
           rows={4}
           placeholder="Tell attendees what your events are about…"
         />
+        <FieldCounter current={draft.about.length} max={ORGANISATION_LIMITS.about} />
       </Field>
 
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
@@ -34,6 +38,7 @@ export function DetailsStep({ wizard }: { wizard: OrganizerOnboarding }) {
             id="contactEmail"
             type="email"
             value={draft.contactEmail}
+            maxLength={ORGANISATION_LIMITS.contactEmail}
             onChange={(event) => patch({ contactEmail: event.target.value })}
             placeholder="hello@org.com"
             autoCapitalize="none"
@@ -44,6 +49,7 @@ export function DetailsStep({ wizard }: { wizard: OrganizerOnboarding }) {
           <Input
             id="contactPhone"
             value={draft.contactPhone}
+            maxLength={ORGANISATION_LIMITS.contactPhone}
             onChange={(event) => patch({ contactPhone: event.target.value })}
             placeholder="+234…"
           />
@@ -53,6 +59,7 @@ export function DetailsStep({ wizard }: { wizard: OrganizerOnboarding }) {
           <Input
             id="website"
             value={draft.website}
+            maxLength={ORGANISATION_LIMITS.website}
             onChange={(event) => patch({ website: event.target.value })}
             placeholder="https://…"
             autoCapitalize="none"
@@ -63,6 +70,7 @@ export function DetailsStep({ wizard }: { wizard: OrganizerOnboarding }) {
           <Input
             id="city"
             value={draft.city}
+            maxLength={ORGANISATION_LIMITS.city}
             onChange={(event) => patch({ city: event.target.value })}
             placeholder="Lagos"
           />

@@ -26,6 +26,7 @@ export function QuantityField({ form }: { form: TicketForm }) {
           <Input
             id="ticket-quantity"
             inputMode="numeric"
+            maxLength={6}
             value={form.form.quantity}
             onChange={(e) => form.set("quantity", e.target.value)}
             placeholder="100"
