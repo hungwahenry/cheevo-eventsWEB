@@ -2,7 +2,12 @@
 
 import { PanelShell, type NavItem } from "@/components/panel-shell"
 import { useMe } from "@/features/auth"
-import { CalendarIcon, LayoutDashboardIcon, SettingsIcon } from "lucide-react"
+import {
+  BanknoteIcon,
+  CalendarIcon,
+  LayoutDashboardIcon,
+  SettingsIcon,
+} from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useEffect } from "react"
 
@@ -14,6 +19,7 @@ const NAV: NavItem[] = [
     exact: true,
   },
   { title: "Events", href: "/organizer/events", icon: CalendarIcon },
+  { title: "Payouts", href: "/organizer/payouts", icon: BanknoteIcon },
   { title: "Settings", href: "/organizer/settings", icon: SettingsIcon },
 ]
 
