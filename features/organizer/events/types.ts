@@ -45,6 +45,7 @@ export type EventItem = {
   tickets_count: number
   tickets_min_price: number | null
   tickets_max_price: number | null
+  currency: string
   rsvps_count: number
   comments_count: number
   created_at: string

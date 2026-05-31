@@ -70,6 +70,7 @@ export function TicketsSection({ event }: { event: EventItem }) {
                 <TicketCard
                   key={ticket.id}
                   ticket={ticket}
+                  currency={event.currency}
                   onEdit={openEdit}
                   onDelete={tickets.deleteTicket}
                 />

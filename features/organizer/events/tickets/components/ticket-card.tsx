@@ -15,18 +15,19 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { formatTicketStatus } from "@/features/organizer/events/tickets/format"
 import type { EventTicket } from "@/features/organizer/events/tickets/types"
-import { formatNaira } from "@/lib/format/money"
+import { formatMoney } from "@/lib/format/money"
 import { useSortable } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
 import { GripVerticalIcon, PencilIcon, Trash2Icon } from "lucide-react"
 
 type TicketCardProps = {
   ticket: EventTicket
+  currency: string
   onEdit: (ticket: EventTicket) => void
   onDelete: (id: string) => void
 }
 
-export function TicketCard({ ticket, onEdit, onDelete }: TicketCardProps) {
+export function TicketCard({ ticket, currency, onEdit, onDelete }: TicketCardProps) {
   const {
     attributes,
     listeners,
@@ -80,11 +81,11 @@ export function TicketCard({ ticket, onEdit, onDelete }: TicketCardProps) {
         ) : null}
         <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1 text-sm">
           <span className="font-semibold">
-            {formatNaira(ticket.gross_price)}
+            {formatMoney(ticket.gross_price, currency)}
           </span>
           {showCompare ? (
             <span className="text-xs text-muted-foreground line-through">
-              {formatNaira(ticket.display_price as number)}
+              {formatMoney(ticket.display_price as number, currency)}
             </span>
           ) : null}
           <span className="text-xs text-muted-foreground">
