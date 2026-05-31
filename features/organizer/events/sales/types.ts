@@ -62,3 +62,21 @@ export type OrdersPage = {
   per_page: number
   total: number
 }
+
+export type AnalyticsSeriesPoint = {
+  date: string
+  tickets_sold: number
+  revenue_minor: number
+}
+
+export type AnalyticsTopCity = {
+  city: string
+  buyers_count: number
+}
+
+export type EventAnalytics = {
+  currency: string
+  cumulative_series: AnalyticsSeriesPoint[]
+  daily_series: AnalyticsSeriesPoint[]
+  top_cities: AnalyticsTopCity[]
+}

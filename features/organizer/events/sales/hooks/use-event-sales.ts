@@ -1,4 +1,5 @@
 import {
+  getEventAnalytics,
   getEventOrder,
   getEventSales,
   listEventOrders,
@@ -8,6 +9,9 @@ import { keepPreviousData, useQuery } from "@tanstack/react-query"
 
 export const salesKey = (eventId: string) =>
   ["organizer-event-sales", eventId] as const
+
+export const analyticsKey = (eventId: string) =>
+  ["organizer-event-analytics", eventId] as const
 
 export const ordersKey = (eventId: string, page: number, status?: OrderStatus) =>
   ["organizer-event-orders", eventId, page, status ?? "all"] as const
@@ -19,6 +23,13 @@ export function useEventSales(eventId: string) {
   return useQuery({
     queryKey: salesKey(eventId),
     queryFn: () => getEventSales(eventId),
+  })
+}
+
+export function useEventAnalytics(eventId: string) {
+  return useQuery({
+    queryKey: analyticsKey(eventId),
+    queryFn: () => getEventAnalytics(eventId),
   })
 }
 

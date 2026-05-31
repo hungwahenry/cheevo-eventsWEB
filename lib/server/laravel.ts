@@ -23,11 +23,17 @@ export async function forwardToLaravel(
     cache: "no-store",
   })
 
-  return new Response(laravelResponse.body, {
+  const responseHeaders = new Headers({
+    "Content-Type":
+      laravelResponse.headers.get("content-type") ?? "application/json",
+  })
+  const disposition = laravelResponse.headers.get("content-disposition")
+  if (disposition) responseHeaders.set("Content-Disposition", disposition)
+
+  const buffer = await laravelResponse.arrayBuffer()
+
+  return new Response(buffer, {
     status: laravelResponse.status,
-    headers: {
-      "Content-Type":
-        laravelResponse.headers.get("content-type") ?? "application/json",
-    },
+    headers: responseHeaders,
   })
 }

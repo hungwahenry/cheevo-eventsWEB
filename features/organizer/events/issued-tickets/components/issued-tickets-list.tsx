@@ -1,5 +1,6 @@
 "use client"
 
+import { CsvExportButton } from "@/components/csv-export-button"
 import {
   DataTable,
   type DataTableColumn,
@@ -97,17 +98,22 @@ export function IssuedTicketsList({ eventId }: { eventId: string }) {
       onSearchChange={setSearchInput}
       searchPlaceholder="Search by code, email, name…"
       filters={
-        <ToggleGroup
-          type="single"
-          value={status}
-          onValueChange={(v) => v && setStatus(v as StatusFilter)}
-          variant="outline"
-          size="sm">
-          <ToggleGroupItem value="all">All</ToggleGroupItem>
-          <ToggleGroupItem value="valid">Valid</ToggleGroupItem>
-          <ToggleGroupItem value="scanned">Used</ToggleGroupItem>
-          <ToggleGroupItem value="revoked">Revoked</ToggleGroupItem>
-        </ToggleGroup>
+        <>
+          <ToggleGroup
+            type="single"
+            value={status}
+            onValueChange={(v) => v && setStatus(v as StatusFilter)}
+            variant="outline"
+            size="sm">
+            <ToggleGroupItem value="all">All</ToggleGroupItem>
+            <ToggleGroupItem value="valid">Valid</ToggleGroupItem>
+            <ToggleGroupItem value="scanned">Used</ToggleGroupItem>
+            <ToggleGroupItem value="revoked">Revoked</ToggleGroupItem>
+          </ToggleGroup>
+          <CsvExportButton
+            href={`/api/organizer/events/${eventId}/issued-tickets/export`}
+          />
+        </>
       }
       empty={{
         title: "No tickets yet",

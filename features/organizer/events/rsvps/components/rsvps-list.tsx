@@ -1,5 +1,6 @@
 "use client"
 
+import { CsvExportButton } from "@/components/csv-export-button"
 import { DataTable, type DataTableColumn } from "@/components/data-table"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useEventRsvps } from "@/features/organizer/events/rsvps/hooks"
@@ -49,6 +50,11 @@ export function RsvpsList({ eventId }: { eventId: string }) {
       lastPage={data?.last_page ?? 1}
       total={data?.total}
       onPageChange={setPage}
+      filters={
+        <CsvExportButton
+          href={`/api/organizer/events/${eventId}/rsvps/export`}
+        />
+      }
       empty={{
         title: "No one's RSVPed yet",
         description: "Once attendees commit, they'll show up here.",

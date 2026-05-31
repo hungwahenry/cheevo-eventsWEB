@@ -1,4 +1,5 @@
 import type {
+  EventAnalytics,
   EventOrder,
   EventSales,
   OrderStatus,
@@ -8,6 +9,10 @@ import { api } from "@/lib/api"
 
 export function getEventSales(eventId: string): Promise<EventSales> {
   return api.get<EventSales>(`/organizer/events/${eventId}/sales`)
+}
+
+export function getEventAnalytics(eventId: string): Promise<EventAnalytics> {
+  return api.get<EventAnalytics>(`/organizer/events/${eventId}/analytics`)
 }
 
 export function listEventOrders(
