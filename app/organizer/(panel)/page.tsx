@@ -1,19 +1,20 @@
 "use client"
 
 import { useMe } from "@/features/auth"
+import { Dashboard } from "@/features/organizer/dashboard/components/dashboard"
 
 export default function OrganizerDashboardPage() {
   const { data: user, isLoading } = useMe()
-  const firstName = user?.profile.first_name
+  const organisation = user?.organisations[0]
+
+  if (isLoading || !organisation) {
+    return <p className="text-muted-foreground text-sm">Loading…</p>
+  }
 
   return (
-    <div className="flex flex-col gap-1">
-      <h1 className="text-2xl font-semibold tracking-tight">
-        {isLoading ? "Loading…" : `Welcome${firstName ? `, ${firstName}` : ""}`}
-      </h1>
-      <p className="text-sm text-muted-foreground">
-        Your organizer dashboard will live here.
-      </p>
-    </div>
+    <Dashboard
+      orgId={organisation.id}
+      userFirstName={user?.profile.first_name ?? null}
+    />
   )
 }
