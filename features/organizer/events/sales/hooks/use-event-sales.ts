@@ -4,13 +4,13 @@ import {
   listEventOrders,
 } from "@/features/organizer/events/sales/api"
 import type { OrderStatus } from "@/features/organizer/events/sales/types"
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query"
+import { keepPreviousData, useQuery } from "@tanstack/react-query"
 
 export const salesKey = (eventId: string) =>
   ["organizer-event-sales", eventId] as const
 
-export const ordersKey = (eventId: string, status?: OrderStatus) =>
-  ["organizer-event-orders", eventId, status ?? "all"] as const
+export const ordersKey = (eventId: string, page: number, status?: OrderStatus) =>
+  ["organizer-event-orders", eventId, page, status ?? "all"] as const
 
 export const orderDetailKey = (eventId: string, orderId: string) =>
   ["organizer-event-order", eventId, orderId] as const
@@ -22,14 +22,11 @@ export function useEventSales(eventId: string) {
   })
 }
 
-export function useEventOrders(eventId: string, status?: OrderStatus) {
-  return useInfiniteQuery({
-    queryKey: ordersKey(eventId, status),
-    queryFn: ({ pageParam }) =>
-      listEventOrders(eventId, pageParam, 20, status),
-    initialPageParam: 1,
-    getNextPageParam: (last) =>
-      last.page < last.last_page ? last.page + 1 : undefined,
+export function useEventOrders(eventId: string, page: number, status?: OrderStatus) {
+  return useQuery({
+    queryKey: ordersKey(eventId, page, status),
+    queryFn: () => listEventOrders(eventId, page, 20, status),
+    placeholderData: keepPreviousData,
   })
 }
 

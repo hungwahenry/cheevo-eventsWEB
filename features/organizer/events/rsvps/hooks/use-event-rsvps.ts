@@ -1,15 +1,13 @@
 import { listEventRsvps } from "@/features/organizer/events/rsvps/api"
-import { useInfiniteQuery } from "@tanstack/react-query"
+import { keepPreviousData, useQuery } from "@tanstack/react-query"
 
-export const rsvpsKey = (eventId: string) =>
-  ["organizer-event-rsvps", eventId] as const
+export const rsvpsKey = (eventId: string, page: number) =>
+  ["organizer-event-rsvps", eventId, page] as const
 
-export function useEventRsvps(eventId: string) {
-  return useInfiniteQuery({
-    queryKey: rsvpsKey(eventId),
-    queryFn: ({ pageParam }) => listEventRsvps(eventId, pageParam),
-    initialPageParam: 1,
-    getNextPageParam: (last) =>
-      last.page < last.last_page ? last.page + 1 : undefined,
+export function useEventRsvps(eventId: string, page: number) {
+  return useQuery({
+    queryKey: rsvpsKey(eventId, page),
+    queryFn: () => listEventRsvps(eventId, page),
+    placeholderData: keepPreviousData,
   })
 }

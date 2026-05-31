@@ -1,13 +1,35 @@
 import * as eventsApi from "@/features/organizer/events/api"
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import type { EventStatusFilter } from "@/features/organizer/events/api"
+import {
+  keepPreviousData,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 
 export const eventsKey = ["organizer", "events"] as const
+
+export const eventsPageKey = (
+  page: number,
+  status?: EventStatusFilter,
+  q?: string
+) =>
+  [...eventsKey, page, status ?? "all", q?.trim() ?? ""] as const
+
 export const eventKey = (id: string) => ["organizer", "event", id] as const
 
-export function useEvents() {
-  return useQuery({ queryKey: eventsKey, queryFn: eventsApi.listEvents })
+export function useEvents(
+  page: number,
+  status?: EventStatusFilter,
+  q?: string
+) {
+  return useQuery({
+    queryKey: eventsPageKey(page, status, q),
+    queryFn: () => eventsApi.listEvents(page, 20, status, q),
+    placeholderData: keepPreviousData,
+  })
 }
 
 export function useEvent(id: string) {

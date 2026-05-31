@@ -3,6 +3,7 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { EventDetailHeader } from "@/features/organizer/events/components/detail/event-detail-header"
 import { EventStatsStrip } from "@/features/organizer/events/components/detail/event-stats-strip"
+import { IssuedTicketsList } from "@/features/organizer/events/issued-tickets/components/issued-tickets-list"
 import { ModerationCommentsList } from "@/features/organizer/events/moderation/components/moderation-comments-list"
 import { RsvpsList } from "@/features/organizer/events/rsvps/components/rsvps-list"
 import { SalesTab } from "@/features/organizer/events/sales/components/sales-tab"
@@ -20,6 +21,14 @@ export function EventDetail({ event }: { event: EventItem }) {
           <TabsList>
             <TabsTrigger value="sales">
               Sales
+              {event.tickets_sold > 0 ? (
+                <span className="ml-1 text-xs text-muted-foreground">
+                  {event.tickets_sold.toLocaleString()}
+                </span>
+              ) : null}
+            </TabsTrigger>
+            <TabsTrigger value="tickets">
+              Tickets
               {event.tickets_sold > 0 ? (
                 <span className="ml-1 text-xs text-muted-foreground">
                   {event.tickets_sold.toLocaleString()}
@@ -46,6 +55,10 @@ export function EventDetail({ event }: { event: EventItem }) {
 
           <TabsContent value="sales">
             <SalesTab eventId={event.id} />
+          </TabsContent>
+
+          <TabsContent value="tickets">
+            <IssuedTicketsList eventId={event.id} />
           </TabsContent>
 
           <TabsContent value="rsvps">

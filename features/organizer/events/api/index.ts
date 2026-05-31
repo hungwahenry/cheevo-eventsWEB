@@ -2,6 +2,7 @@ import type {
   EventFeature,
   EventImage,
   EventItem,
+  EventsPage,
   Interest,
   PlaceDetails,
   PlacePrediction,
@@ -12,8 +13,22 @@ export function listInterests() {
   return api.get<Interest[]>("/interests")
 }
 
-export function listEvents() {
-  return api.get<EventItem[]>("/organizer/events")
+export type EventStatusFilter = "draft" | "published"
+
+export function listEvents(
+  page: number,
+  perPage = 20,
+  status?: EventStatusFilter,
+  q?: string
+) {
+  return api.get<EventsPage>("/organizer/events", {
+    params: {
+      page,
+      per_page: perPage,
+      ...(status ? { status } : {}),
+      ...(q ? { q } : {}),
+    },
+  })
 }
 
 export function getEvent(id: string) {

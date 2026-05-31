@@ -1,106 +1,143 @@
 "use client"
 
+import { DataTable, type DataTableColumn } from "@/components/data-table"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Button } from "@/components/ui/button"
+import {
+  ToggleGroup,
+  ToggleGroupItem,
+} from "@/components/ui/toggle-group"
 import { OrderStatusBadge } from "@/features/organizer/events/sales/components/order-status-badge"
 import { useEventOrders } from "@/features/organizer/events/sales/hooks"
-import type { EventOrder } from "@/features/organizer/events/sales/types"
+import type {
+  EventOrder,
+  OrderStatus,
+} from "@/features/organizer/events/sales/types"
 import { formatRelativeShort } from "@/lib/format/datetime"
 import { formatMoney } from "@/lib/format/money"
-import Link from "next/link"
-import { useMemo } from "react"
+import { useRouter } from "next/navigation"
+import { useEffect, useState } from "react"
+
+type StatusFilter = OrderStatus | "all"
 
 export function OrdersList({ eventId }: { eventId: string }) {
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
-    useEventOrders(eventId)
+  const router = useRouter()
+  const [status, setStatus] = useState<StatusFilter>("all")
+  const [page, setPage] = useState(1)
 
-  const items = useMemo(
-    () => data?.pages.flatMap((p) => p.items) ?? [],
-    [data]
+  useEffect(() => {
+    setPage(1)
+  }, [status])
+
+  const { data, isLoading, isFetching } = useEventOrders(
+    eventId,
+    page,
+    status === "all" ? undefined : status
   )
 
-  if (isLoading) {
-    return <p className="text-sm text-muted-foreground">Loading…</p>
-  }
-
-  if (items.length === 0) {
-    return (
-      <div className="rounded-xl border border-dashed py-10 text-center">
-        <p className="text-sm font-medium">No orders yet</p>
-        <p className="mt-1 text-xs text-muted-foreground">
-          Once people buy tickets, they&apos;ll show up here.
-        </p>
-      </div>
-    )
-  }
+  const columns: DataTableColumn<EventOrder>[] = [
+    {
+      id: "buyer",
+      header: "Buyer",
+      cell: (o) => <BuyerCell order={o} />,
+    },
+    {
+      id: "tickets",
+      header: "Tickets",
+      cell: (o) => (
+        <span className="text-sm">
+          {o.items_count} ticket{o.items_count === 1 ? "" : "s"}
+        </span>
+      ),
+    },
+    {
+      id: "total",
+      header: "Total",
+      cell: (o) => (
+        <span className="font-semibold tabular-nums">
+          {formatMoney(o.total_minor, o.currency)}
+        </span>
+      ),
+      cellClassName: "text-right",
+      headerClassName: "text-right",
+    },
+    {
+      id: "status",
+      header: "Status",
+      cell: (o) => <OrderStatusBadge status={o.status} />,
+    },
+    {
+      id: "placed",
+      header: "Placed",
+      cell: (o) => (
+        <span className="text-muted-foreground text-xs">
+          {formatRelativeShort(o.paid_at ?? o.created_at)}
+        </span>
+      ),
+    },
+  ]
 
   return (
-    <div className="flex flex-col gap-3">
-      <ul className="divide-y rounded-xl border">
-        {items.map((order) => (
-          <OrderRow key={order.id} eventId={eventId} order={order} />
-        ))}
-      </ul>
-
-      {hasNextPage ? (
-        <Button
+    <DataTable<EventOrder>
+      columns={columns}
+      data={data?.items ?? []}
+      keyExtractor={(o) => o.id}
+      isLoading={isLoading}
+      isFetching={isFetching}
+      page={data?.page ?? page}
+      lastPage={data?.last_page ?? 1}
+      total={data?.total}
+      onPageChange={setPage}
+      filters={
+        <ToggleGroup
+          type="single"
+          value={status}
+          onValueChange={(v) => v && setStatus(v as StatusFilter)}
           variant="outline"
-          size="sm"
-          className="self-center"
-          disabled={isFetchingNextPage}
-          onClick={() => fetchNextPage()}
-        >
-          {isFetchingNextPage ? "Loading…" : "Load more"}
-        </Button>
-      ) : null}
-    </div>
+          size="sm">
+          <ToggleGroupItem value="all">All</ToggleGroupItem>
+          <ToggleGroupItem value="paid">Paid</ToggleGroupItem>
+          <ToggleGroupItem value="pending">Pending</ToggleGroupItem>
+          <ToggleGroupItem value="cancelled">Cancelled</ToggleGroupItem>
+          <ToggleGroupItem value="refunded">Refunded</ToggleGroupItem>
+        </ToggleGroup>
+      }
+      empty={{
+        title: "No orders yet",
+        description: "Once people buy tickets, they'll show up here.",
+      }}
+      onRowClick={(o) =>
+        router.push(`/organizer/events/${eventId}/orders/${o.id}`)
+      }
+    />
   )
 }
 
-function OrderRow({
-  eventId,
-  order,
-}: {
-  eventId: string
-  order: EventOrder
-}) {
-  const buyerName =
+function BuyerCell({ order }: { order: EventOrder }) {
+  const name =
     order.buyer.display_name ?? order.buyer.username ?? order.buyer.email ?? "—"
-  const initials = buyerName
+  const initials = name
     .split(" ")
     .map((s) => s[0])
     .slice(0, 2)
     .join("")
     .toUpperCase()
 
-  const when = formatRelativeShort(order.paid_at ?? order.created_at)
-
   return (
-    <li>
-      <Link
-        href={`/organizer/events/${eventId}/orders/${order.id}`}
-        className="flex items-center gap-3 px-4 py-3 transition-colors hover:bg-muted/40"
-      >
-        <Avatar className="size-9">
-          {order.buyer.avatar_url ? (
-            <AvatarImage src={order.buyer.avatar_url} alt="" />
-          ) : null}
-          <AvatarFallback className="text-xs">{initials}</AvatarFallback>
-        </Avatar>
-        <div className="min-w-0 flex-1">
-          <p className="truncate text-sm font-medium">{buyerName}</p>
+    <div className="flex items-center gap-2.5">
+      <Avatar size="sm">
+        {order.buyer.avatar_url ? (
+          <AvatarImage src={order.buyer.avatar_url} alt="" />
+        ) : null}
+        <AvatarFallback className="text-[10px]">{initials}</AvatarFallback>
+      </Avatar>
+      <div className="min-w-0">
+        <p className="truncate text-sm font-medium">{name}</p>
+        {order.buyer.email && order.buyer.email !== name ? (
           <p className="truncate text-xs text-muted-foreground">
-            {order.items_count} ticket{order.items_count === 1 ? "" : "s"} ·{" "}
-            {when ?? "—"}
+            {order.buyer.email}
           </p>
-        </div>
-        <div className="flex flex-col items-end gap-1">
-          <span className="text-sm font-semibold tabular-nums">
-            {formatMoney(order.total_minor, order.currency)}
-          </span>
-          <OrderStatusBadge status={order.status} />
-        </div>
-      </Link>
-    </li>
+        ) : null}
+      </div>
+    </div>
   )
 }

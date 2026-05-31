@@ -7,11 +7,19 @@ import { api } from "@/lib/api"
 export function listModerationComments(
   eventId: string,
   page: number,
-  perPage = 20
+  perPage = 20,
+  options: { q?: string; flaggedOnly?: boolean } = {}
 ): Promise<ModerationCommentsPage> {
   return api.get<ModerationCommentsPage>(
     `/organizer/events/${eventId}/comments`,
-    { params: { page, per_page: perPage } }
+    {
+      params: {
+        page,
+        per_page: perPage,
+        ...(options.q ? { q: options.q } : {}),
+        ...(options.flaggedOnly ? { flagged_only: 1 } : {}),
+      },
+    }
   )
 }
 

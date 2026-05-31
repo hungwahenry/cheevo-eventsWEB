@@ -71,3 +71,11 @@ export type PlaceDetails = {
   longitude: number | null
   city: string | null
 }
+
+export type EventsPage = {
+  items: EventItem[]
+  page: number
+  last_page: number
+  per_page: number
+  total: number
+}
