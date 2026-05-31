@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button"
 import { ModerationCommentRow } from "@/features/organizer/events/moderation/components/moderation-comment-row"
+import { ModerationReplies } from "@/features/organizer/events/moderation/components/moderation-replies"
 import { useModerationComments } from "@/features/organizer/events/moderation/hooks"
 import { useMemo } from "react"
 
@@ -34,7 +35,10 @@ export function ModerationCommentsList({ eventId }: { eventId: string }) {
     <div className="flex flex-col gap-3">
       <ul className="divide-y rounded-xl border">
         {items.map((comment) => (
-          <ModerationCommentRow key={comment.id} comment={comment} />
+          <li key={comment.id}>
+            <ModerationCommentRow comment={comment} />
+            <ModerationReplies parent={comment} />
+          </li>
         ))}
       </ul>
 

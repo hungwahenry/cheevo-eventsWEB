@@ -24,7 +24,7 @@ export function ModerationCommentRow({
     comment.parent_id !== null ? comment.mentioned_users[0]?.username : null
 
   return (
-    <li className="flex gap-3 px-4 py-3">
+    <div className="flex gap-3 px-4 py-3">
       <Avatar className="size-9 shrink-0">
         {comment.author.avatar_url ? (
           <AvatarImage src={comment.author.avatar_url} alt="" />
@@ -92,6 +92,6 @@ export function ModerationCommentRow({
       </div>
 
       <CommentFlagButton comment={comment} />
-    </li>
+    </div>
   )
 }
