@@ -33,7 +33,8 @@ import { useState } from "react"
 export function EventTableRow({ event }: { event: EventItem }) {
   const [deleteOpen, setDeleteOpen] = useState(false)
   const remove = useDeleteEvent()
-  const href = `/organizer/events/${event.id}/edit`
+  const href = `/organizer/events/${event.id}`
+  const editHref = `/organizer/events/${event.id}/edit`
   const when = formatEventWhen(event.starts_at, event.ends_at)
 
   return (
@@ -119,7 +120,7 @@ export function EventTableRow({ event }: { event: EventItem }) {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuItem asChild>
-                <Link href={href}>Edit</Link>
+                <Link href={editHref}>Edit</Link>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem

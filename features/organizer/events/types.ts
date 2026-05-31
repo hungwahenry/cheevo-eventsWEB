@@ -45,6 +45,8 @@ export type EventItem = {
   tickets_count: number
   tickets_min_price: number | null
   tickets_max_price: number | null
+  rsvps_count: number
+  comments_count: number
   created_at: string
   // Loaded on show, omitted from the list response.
   images?: EventImage[]
