@@ -42,6 +42,7 @@ export type EventItem = {
   video_url: string | null
   status: EventStatus
   published_at: string | null
+  presale_until: string | null
   tickets_count: number
   tickets_min_price: number | null
   tickets_max_price: number | null

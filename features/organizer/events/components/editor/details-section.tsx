@@ -1,7 +1,12 @@
 "use client"
 
 import { FieldCounter } from "@/components/field-counter"
-import { Field, FieldError, FieldLabel } from "@/components/ui/field"
+import {
+  Field,
+  FieldDescription,
+  FieldError,
+  FieldLabel,
+} from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { LocationSection } from "@/features/organizer/events/components/editor/location-section"
@@ -74,6 +79,21 @@ export function DetailsSection({ form, onPlace }: DetailsSectionProps) {
           <FieldError errors={[errors.ends_at]} />
         </Field>
       </div>
+
+      <Field>
+        <FieldLabel htmlFor="presale_until">RSVP-only presale until</FieldLabel>
+        <Input
+          id="presale_until"
+          type="datetime-local"
+          aria-invalid={!!errors.presale_until}
+          {...form.register("presale_until")}
+        />
+        <FieldDescription>
+          Optional. Before this time, only attendees who RSVPed can buy
+          tickets. Leave blank for public sale from the start.
+        </FieldDescription>
+        <FieldError errors={[errors.presale_until]} />
+      </Field>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <LocationSection

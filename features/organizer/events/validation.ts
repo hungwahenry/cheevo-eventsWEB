@@ -33,6 +33,7 @@ export const eventSchema = z
     latitude: z.string(),
     longitude: z.string(),
     video_url: urlOrEmpty(EVENT_LIMITS.videoUrl),
+    presale_until: z.string(),
     interests: z.array(z.string()),
   })
   .refine(
