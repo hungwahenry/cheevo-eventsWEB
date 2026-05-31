@@ -1,7 +1,9 @@
 import type {
   Balance,
   Bank,
+  Payout,
   PayoutAccount,
+  PayoutsPage,
   ResolvedAccount,
 } from "@/features/organizer/payouts/types"
 import { api } from "@/lib/api"
@@ -44,4 +46,25 @@ export function deletePayoutAccount(orgId: string): Promise<null> {
 
 export function getBalance(orgId: string): Promise<Balance> {
   return api.get<Balance>(`/organizer/organisations/${orgId}/balance`)
+}
+
+export function listPayouts(orgId: string, page: number): Promise<PayoutsPage> {
+  return api.get<PayoutsPage>(`/organizer/organisations/${orgId}/payouts`, {
+    params: { page, per_page: 20 },
+  })
+}
+
+export function getPayout(orgId: string, payoutId: string): Promise<Payout> {
+  return api.get<Payout>(
+    `/organizer/organisations/${orgId}/payouts/${payoutId}`
+  )
+}
+
+export function requestPayout(
+  orgId: string,
+  amountMinor: number
+): Promise<Payout> {
+  return api.post<Payout>(`/organizer/organisations/${orgId}/payouts`, {
+    amount_minor: amountMinor,
+  })
 }

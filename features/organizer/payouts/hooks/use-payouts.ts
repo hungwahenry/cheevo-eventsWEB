@@ -1,5 +1,7 @@
 import * as payoutsApi from "@/features/organizer/payouts/api"
+import { isApiError } from "@/lib/api"
 import {
+  keepPreviousData,
   useMutation,
   useQuery,
   useQueryClient,
@@ -11,6 +13,10 @@ export const payoutAccountKey = (orgId: string) =>
   ["organizer-payout-account", orgId] as const
 export const balanceKey = (orgId: string) =>
   ["organizer-payout-balance", orgId] as const
+export const payoutsListKey = (orgId: string, page: number) =>
+  ["organizer-payouts", orgId, page] as const
+export const payoutKey = (orgId: string, payoutId: string) =>
+  ["organizer-payout", orgId, payoutId] as const
 
 export function useBanks() {
   return useQuery({
@@ -64,5 +70,42 @@ export function useBalance(orgId: string) {
   return useQuery({
     queryKey: balanceKey(orgId),
     queryFn: () => payoutsApi.getBalance(orgId),
+  })
+}
+
+export function usePayouts(orgId: string, page: number) {
+  return useQuery({
+    queryKey: payoutsListKey(orgId, page),
+    queryFn: () => payoutsApi.listPayouts(orgId, page),
+    placeholderData: keepPreviousData,
+  })
+}
+
+export function usePayout(orgId: string, payoutId: string) {
+  return useQuery({
+    queryKey: payoutKey(orgId, payoutId),
+    queryFn: () => payoutsApi.getPayout(orgId, payoutId),
+  })
+}
+
+export function useRequestPayout(orgId: string) {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (amountMinor: number) =>
+      payoutsApi.requestPayout(orgId, amountMinor),
+    onSuccess: () => {
+      toast.success("Payout requested. We’ll review it shortly.")
+      queryClient.invalidateQueries({
+        queryKey: ["organizer-payouts", orgId],
+      })
+      queryClient.invalidateQueries({ queryKey: balanceKey(orgId) })
+    },
+    onError: (error) => {
+      if (isApiError(error)) {
+        toast.error(error.message)
+      } else {
+        toast.error("Could not request payout.")
+      }
+    },
   })
 }

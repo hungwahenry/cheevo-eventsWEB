@@ -39,3 +39,38 @@ export type Balance = {
   hold_window_days: number
   per_event: EventBalanceRow[]
 }
+
+export type PayoutStatus =
+  | "requested"
+  | "approved"
+  | "processing"
+  | "paid"
+  | "rejected"
+  | "failed"
+
+export type Payout = {
+  id: string
+  amount_minor: number
+  fees_minor: number
+  net_minor: number
+  currency: string
+  status: PayoutStatus
+  bank_name: string
+  account_number: string
+  account_name: string
+  failed_reason: string | null
+  review_notes: string | null
+  requested_at: string
+  approved_at: string | null
+  paid_at: string | null
+  failed_at: string | null
+  rejected_at: string | null
+}
+
+export type PayoutsPage = {
+  items: Payout[]
+  page: number
+  last_page: number
+  per_page: number
+  total: number
+}
