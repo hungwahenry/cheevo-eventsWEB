@@ -21,6 +21,12 @@ export function EventsTable({ events }: { events: EventItem[] }) {
               Location
             </TableHead>
             <TableHead className="w-44">When</TableHead>
+            <TableHead className="hidden w-32 text-right lg:table-cell">
+              Sold
+            </TableHead>
+            <TableHead className="hidden w-36 text-right lg:table-cell">
+              Revenue
+            </TableHead>
             <TableHead className="w-28">Status</TableHead>
             <TableHead className="w-12" />
           </TableRow>

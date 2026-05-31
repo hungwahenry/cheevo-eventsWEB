@@ -5,6 +5,7 @@ import { EventDetailHeader } from "@/features/organizer/events/components/detail
 import { EventStatsStrip } from "@/features/organizer/events/components/detail/event-stats-strip"
 import { ModerationCommentsList } from "@/features/organizer/events/moderation/components/moderation-comments-list"
 import { RsvpsList } from "@/features/organizer/events/rsvps/components/rsvps-list"
+import { SalesTab } from "@/features/organizer/events/sales/components/sales-tab"
 import type { EventItem } from "@/features/organizer/events/types"
 
 export function EventDetail({ event }: { event: EventItem }) {
@@ -15,8 +16,16 @@ export function EventDetail({ event }: { event: EventItem }) {
       <div className="mt-8 flex flex-col gap-8">
         <EventStatsStrip event={event} />
 
-        <Tabs defaultValue="rsvps" className="gap-4">
+        <Tabs defaultValue="sales" className="gap-4">
           <TabsList>
+            <TabsTrigger value="sales">
+              Sales
+              {event.tickets_sold > 0 ? (
+                <span className="ml-1 text-xs text-muted-foreground">
+                  {event.tickets_sold.toLocaleString()}
+                </span>
+              ) : null}
+            </TabsTrigger>
             <TabsTrigger value="rsvps">
               RSVPs
               {event.rsvps_count > 0 ? (
@@ -34,6 +43,10 @@ export function EventDetail({ event }: { event: EventItem }) {
               ) : null}
             </TabsTrigger>
           </TabsList>
+
+          <TabsContent value="sales">
+            <SalesTab eventId={event.id} />
+          </TabsContent>
 
           <TabsContent value="rsvps">
             <RsvpsList eventId={event.id} />

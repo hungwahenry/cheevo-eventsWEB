@@ -1,5 +1,11 @@
 import type { EventItem } from "@/features/organizer/events/types"
-import { MessageCircleIcon, TicketIcon, UsersIcon } from "lucide-react"
+import { formatMoney } from "@/lib/format/money"
+import {
+  BanknoteIcon,
+  MessageCircleIcon,
+  TicketIcon,
+  UsersIcon,
+} from "lucide-react"
 
 type Stat = {
   label: string
@@ -10,6 +16,16 @@ type Stat = {
 export function EventStatsStrip({ event }: { event: EventItem }) {
   const stats: Stat[] = [
     {
+      label: "Revenue",
+      value: formatMoney(event.revenue_minor, event.currency),
+      icon: BanknoteIcon,
+    },
+    {
+      label: "Tickets sold",
+      value: event.tickets_sold.toLocaleString(),
+      icon: TicketIcon,
+    },
+    {
       label: "Going",
       value: event.rsvps_count.toLocaleString(),
       icon: UsersIcon,
@@ -19,15 +35,10 @@ export function EventStatsStrip({ event }: { event: EventItem }) {
       value: event.comments_count.toLocaleString(),
       icon: MessageCircleIcon,
     },
-    {
-      label: "Tickets",
-      value: event.tickets_count.toLocaleString(),
-      icon: TicketIcon,
-    },
   ]
 
   return (
-    <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+    <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
       {stats.map((stat) => (
         <StatCard key={stat.label} {...stat} />
       ))}

@@ -48,6 +48,8 @@ export type EventItem = {
   currency: string
   rsvps_count: number
   comments_count: number
+  tickets_sold: number
+  revenue_minor: number
   created_at: string
   // Loaded on show, omitted from the list response.
   images?: EventImage[]

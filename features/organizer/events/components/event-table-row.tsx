@@ -26,6 +26,7 @@ import {
 } from "@/features/organizer/events/format"
 import { useDeleteEvent } from "@/features/organizer/events/hooks"
 import type { EventItem } from "@/features/organizer/events/types"
+import { formatMoney } from "@/lib/format/money"
 import { ImageIcon, MapPinIcon, MoreHorizontalIcon } from "lucide-react"
 import Link from "next/link"
 import { useState } from "react"
@@ -101,6 +102,22 @@ export function EventTableRow({ event }: { event: EventItem }) {
               <span className="text-xs text-muted-foreground">{when.time}</span>
             ) : null}
           </div>
+        </TableCell>
+
+        <TableCell className="hidden w-32 text-right text-sm tabular-nums lg:table-cell">
+          {event.tickets_sold > 0 ? (
+            event.tickets_sold.toLocaleString()
+          ) : (
+            <span className="text-muted-foreground">—</span>
+          )}
+        </TableCell>
+
+        <TableCell className="hidden w-36 text-right text-sm tabular-nums lg:table-cell">
+          {event.revenue_minor > 0 ? (
+            formatMoney(event.revenue_minor, event.currency)
+          ) : (
+            <span className="text-muted-foreground">—</span>
+          )}
         </TableCell>
 
         <TableCell className="w-28">
