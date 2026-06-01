@@ -24,3 +24,13 @@ export function createBroadcast(
     payload
   )
 }
+
+export function sendTestBroadcast(
+  eventId: string,
+  payload: CreateBroadcastPayload
+): Promise<null> {
+  return api.post<null>(
+    `/organizer/events/${eventId}/broadcasts/test`,
+    payload
+  )
+}

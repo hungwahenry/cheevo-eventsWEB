@@ -20,7 +20,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { useCreateBroadcast } from "@/features/organizer/events/broadcasts/hooks"
+import {
+  useCreateBroadcast,
+  useSendTestBroadcast,
+} from "@/features/organizer/events/broadcasts/hooks"
 import { BROADCAST_LIMITS } from "@/features/organizer/events/broadcasts/limits"
 import { RichTextEditor } from "@/features/organizer/events/broadcasts/components/rich-text-editor"
 import type {
@@ -65,6 +68,7 @@ const defaults: FormValues = {
 export function ComposeBroadcastDialog({ eventId }: { eventId: string }) {
   const [open, setOpen] = useState(false)
   const create = useCreateBroadcast(eventId)
+  const sendTest = useSendTestBroadcast(eventId)
 
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
@@ -74,16 +78,25 @@ export function ComposeBroadcastDialog({ eventId }: { eventId: string }) {
   const subjectLen = form.watch("subject")?.length ?? 0
   const bodyLen = form.watch("body_text")?.length ?? 0
 
+  const buildPayload = (values: FormValues): CreateBroadcastPayload => ({
+    audience: values.audience,
+    subject: values.subject.trim(),
+    body_html: values.body_html,
+  })
+
   const submit = form.handleSubmit(async (values) => {
-    const payload: CreateBroadcastPayload = {
-      audience: values.audience,
-      subject: values.subject.trim(),
-      body_html: values.body_html,
-    }
     try {
-      await create.mutateAsync(payload)
+      await create.mutateAsync(buildPayload(values))
       setOpen(false)
       form.reset(defaults)
+    } catch (error) {
+      applyApiErrors(form, error)
+    }
+  })
+
+  const sendPreview = form.handleSubmit(async (values) => {
+    try {
+      await sendTest.mutateAsync(buildPayload(values))
     } catch (error) {
       applyApiErrors(form, error)
     }
@@ -171,8 +184,16 @@ export function ComposeBroadcastDialog({ eventId }: { eventId: string }) {
             <FieldCounter current={bodyLen} max={BROADCAST_LIMITS.body} />
           </Field>
 
-          <DialogFooter>
-            <Button type="submit" disabled={create.isPending}>
+          <DialogFooter className="gap-2 sm:gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={sendPreview}
+              disabled={sendTest.isPending || create.isPending}
+            >
+              {sendTest.isPending ? "Sending test…" : "Send test to me"}
+            </Button>
+            <Button type="submit" disabled={create.isPending || sendTest.isPending}>
               {create.isPending ? "Sending…" : "Send broadcast"}
             </Button>
           </DialogFooter>
