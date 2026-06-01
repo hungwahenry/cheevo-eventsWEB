@@ -1,6 +1,7 @@
 "use client"
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Skeleton } from "@/components/ui/skeleton"
 import { OrderStatusBadge } from "@/features/organizer/events/sales/components/order-status-badge"
 import { useEventOrder } from "@/features/organizer/events/sales/hooks"
 import { formatMoney } from "@/lib/format/money"
@@ -17,7 +18,18 @@ export function OrderDetail({
   const { data: order, isLoading } = useEventOrder(eventId, orderId)
 
   if (isLoading || !order) {
-    return <p className="text-sm text-muted-foreground">Loading…</p>
+    return (
+      <div className="flex flex-col gap-6">
+        <Skeleton className="h-4 w-32" />
+        <div className="flex flex-col gap-2">
+          <Skeleton className="h-7 w-56" />
+          <Skeleton className="h-4 w-40" />
+        </div>
+        <Skeleton className="h-24 w-full" />
+        <Skeleton className="h-40 w-full" />
+        <Skeleton className="h-36 w-full" />
+      </div>
+    )
   }
 
   const buyerName =

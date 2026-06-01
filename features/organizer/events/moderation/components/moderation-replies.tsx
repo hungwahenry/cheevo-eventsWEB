@@ -1,6 +1,7 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
+import { Skeleton } from "@/components/ui/skeleton"
 import { ModerationCommentRow } from "@/features/organizer/events/moderation/components/moderation-comment-row"
 import { useModerationReplies } from "@/features/organizer/events/moderation/hooks"
 import type { ModerationComment } from "@/features/organizer/events/moderation/types"
@@ -43,7 +44,10 @@ export function ModerationReplies({
       {expanded ? (
         <div className="mt-1 divide-y rounded-xl bg-muted/30">
           {isLoading ? (
-            <p className="px-4 py-3 text-xs text-muted-foreground">Loading…</p>
+            <div className="flex flex-col gap-2 px-4 py-3">
+              <Skeleton className="h-10 w-full" />
+              <Skeleton className="h-10 w-full" />
+            </div>
           ) : null}
 
           {replies.map((reply) => (
@@ -58,7 +62,7 @@ export function ModerationReplies({
                 disabled={isFetchingNextPage}
                 onClick={() => fetchNextPage()}
               >
-                {isFetchingNextPage ? "Loading…" : "View more replies"}
+                {isFetchingNextPage ? "Loading more…" : "View more replies"}
               </Button>
             </div>
           ) : null}

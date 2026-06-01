@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/alert-dialog"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
+import { Skeleton } from "@/components/ui/skeleton"
 import { IssuedTicketStatusBadge } from "@/features/organizer/events/issued-tickets/components/issued-ticket-status-badge"
 import {
   useIssuedTicket,
@@ -30,7 +31,18 @@ export function IssuedTicketDetail({ eventId, ticketId }: Props) {
   const revoke = useRevokeIssuedTicket(eventId, ticketId)
 
   if (isLoading || !ticket) {
-    return <p className="text-muted-foreground text-sm">Loading…</p>
+    return (
+      <div className="flex flex-col gap-6">
+        <Skeleton className="h-4 w-32" />
+        <div className="flex flex-col gap-2">
+          <Skeleton className="h-7 w-1/2" />
+          <Skeleton className="h-4 w-40" />
+        </div>
+        <Skeleton className="h-56 w-full" />
+        <Skeleton className="h-24 w-full" />
+        <Skeleton className="h-40 w-full" />
+      </div>
+    )
   }
 
   const holderName =

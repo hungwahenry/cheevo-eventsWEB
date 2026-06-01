@@ -1,5 +1,6 @@
 "use client"
 
+import { Skeleton } from "@/components/ui/skeleton"
 import { useMe } from "@/features/auth"
 import { SettingsForm } from "@/features/organizer/settings/components/settings-form"
 
@@ -17,7 +18,12 @@ export default function OrganizerSettingsPage() {
       </div>
 
       {isLoading || !organisation ? (
-        <p className="text-muted-foreground text-sm">Loading…</p>
+        <div className="flex max-w-3xl flex-col gap-8">
+          <Skeleton className="h-48 w-full" />
+          <Skeleton className="h-64 w-full" />
+          <Skeleton className="h-44 w-full" />
+          <Skeleton className="h-40 w-full" />
+        </div>
       ) : (
         <SettingsForm organisation={organisation} />
       )}
