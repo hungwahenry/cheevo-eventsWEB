@@ -41,7 +41,6 @@ export function RequestPayoutDialog({
       setInput("")
       request.reset()
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open])
 
   const amountMinor = nairaInputToKobo(input) ?? 0

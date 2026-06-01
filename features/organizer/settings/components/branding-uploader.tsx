@@ -43,7 +43,6 @@ export function BrandingUploader({
         onClick={() => coverInput.current?.click()}
         className="bg-muted relative block h-40 w-full overflow-hidden rounded-xl">
         {coverPreview ? (
-          // eslint-disable-next-line @next/next/no-img-element
           <img src={coverPreview} alt="" className="size-full object-cover" />
         ) : null}
         <span className="bg-background/85 text-foreground absolute top-3 right-3 flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium">
@@ -59,7 +58,6 @@ export function BrandingUploader({
         className="absolute -bottom-10 left-4 size-24">
         <span className="border-background bg-muted block size-full overflow-hidden rounded-2xl border-4">
           {logoPreview ? (
-            // eslint-disable-next-line @next/next/no-img-element
             <img src={logoPreview} alt="" className="size-full object-cover" />
           ) : null}
         </span>

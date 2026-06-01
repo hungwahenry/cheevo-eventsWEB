@@ -35,6 +35,7 @@ export type NextEvent = {
   venue_name: string | null
   city: string | null
   flyer_url: string | null
+  flyer_type: "image" | "video" | null
   tickets_sold: number
   revenue_minor: number
 }

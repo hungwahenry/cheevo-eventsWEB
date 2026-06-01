@@ -56,7 +56,6 @@ export function BrandingHeader({
       >
         <span className="block size-full overflow-hidden rounded-2xl border-4 border-background bg-muted">
           {logoPreview ? (
-            // eslint-disable-next-line @next/next/no-img-element
             <img src={logoPreview} alt="" className="size-full object-cover" />
           ) : null}
         </span>

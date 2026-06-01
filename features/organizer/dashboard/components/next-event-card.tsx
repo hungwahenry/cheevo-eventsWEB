@@ -57,8 +57,21 @@ export function NextEventCard({ event, currency, isLoading }: Props) {
       className="bg-card flex gap-4 rounded-xl p-4 transition-opacity hover:opacity-90">
       <div className="bg-muted relative h-24 w-20 shrink-0 overflow-hidden rounded-lg">
         {event.flyer_url ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={event.flyer_url} alt="" className="size-full object-cover" />
+          event.flyer_type === "video" ? (
+            <video
+              src={`${event.flyer_url}#t=0.1`}
+              muted
+              playsInline
+              preload="metadata"
+              className="size-full object-cover"
+            />
+          ) : (
+            <img
+              src={event.flyer_url}
+              alt=""
+              className="size-full object-cover"
+            />
+          )
         ) : null}
       </div>
       <div className="flex min-w-0 flex-1 flex-col gap-1">
