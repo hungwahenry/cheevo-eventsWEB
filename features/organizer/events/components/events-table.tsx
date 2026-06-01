@@ -28,7 +28,11 @@ import {
   formatEventStatus,
   formatEventWhen,
 } from "@/features/organizer/events/format"
-import { useDeleteEvent, useEvents } from "@/features/organizer/events/hooks"
+import {
+  useDeleteEvent,
+  useDuplicateEvent,
+  useEvents,
+} from "@/features/organizer/events/hooks"
 import type { EventItem, EventStatus } from "@/features/organizer/events/types"
 import { formatMoney } from "@/lib/format/money"
 import { ImageIcon, MapPinIcon, MoreHorizontalIcon } from "lucide-react"
@@ -46,6 +50,7 @@ export function EventsTable() {
   const [page, setPage] = useState(1)
   const [deleteTarget, setDeleteTarget] = useState<EventItem | null>(null)
   const remove = useDeleteEvent()
+  const duplicate = useDuplicateEvent()
 
   useEffect(() => {
     const t = setTimeout(() => setSearch(searchInput), 250)
@@ -138,7 +143,14 @@ export function EventsTable() {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuItem asChild>
-                <Link href={`/organizer/events/${e.id}/edit`}>Edit</Link>
+                <Link href={`/organizer/events/${e.id}/edit`}>
+                  {e.status === "past" ? "View" : "Edit"}
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => duplicate.mutate(e.id)}
+                disabled={duplicate.isPending}>
+                Duplicate
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem

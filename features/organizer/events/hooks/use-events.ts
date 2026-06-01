@@ -63,3 +63,17 @@ export function useDeleteEvent() {
     },
   })
 }
+
+export function useDuplicateEvent() {
+  const router = useRouter()
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (id: string) => eventsApi.duplicateEvent(id),
+    onSuccess: (copy) => {
+      toast.success("Event duplicated.")
+      queryClient.invalidateQueries({ queryKey: eventsKey })
+      router.push(`/organizer/events/${copy.id}/edit`)
+    },
+  })
+}

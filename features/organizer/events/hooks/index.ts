@@ -3,6 +3,7 @@ export {
   eventsKey,
   useCreateEvent,
   useDeleteEvent,
+  useDuplicateEvent,
   useEvent,
   useEvents,
 } from "./use-events"

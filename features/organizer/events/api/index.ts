@@ -54,6 +54,10 @@ export function publishEvent(id: string) {
   return api.post<EventItem>(`/organizer/events/${id}/publish`)
 }
 
+export function duplicateEvent(id: string) {
+  return api.post<EventItem>(`/organizer/events/${id}/duplicate`)
+}
+
 export function deleteEvent(id: string) {
   return api.delete<null>(`/organizer/events/${id}`)
 }
