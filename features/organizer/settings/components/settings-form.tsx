@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button"
 import type { Organisation } from "@/features/auth"
 import { BrandingSection } from "@/features/organizer/settings/components/branding-section"
 import { ContactSection } from "@/features/organizer/settings/components/contact-section"
+import { NotificationsSection } from "@/features/organizer/settings/components/notifications-section"
 import { ProfileSection } from "@/features/organizer/settings/components/profile-section"
 import {
   SocialsSection,
@@ -104,6 +105,8 @@ export function SettingsForm({ organisation }: Props) {
             onPhoneChange={setContactPhone}
             onWebsiteChange={setWebsite}
           />
+
+          <NotificationsSection />
         </div>
 
         <aside className="flex flex-col gap-6">
