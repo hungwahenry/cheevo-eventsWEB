@@ -7,6 +7,7 @@ import {
   CalendarIcon,
   LayoutDashboardIcon,
   SettingsIcon,
+  UsersIcon,
 } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useEffect } from "react"
@@ -20,6 +21,7 @@ const NAV: NavItem[] = [
   },
   { title: "Events", href: "/organizer/events", icon: CalendarIcon },
   { title: "Payouts", href: "/organizer/payouts", icon: BanknoteIcon },
+  { title: "Team", href: "/organizer/team", icon: UsersIcon },
   { title: "Settings", href: "/organizer/settings", icon: SettingsIcon },
 ]
 
