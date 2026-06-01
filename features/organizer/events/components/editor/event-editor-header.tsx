@@ -23,6 +23,7 @@ export function EventEditorHeader({
   isPublishing,
 }: EventEditorHeaderProps) {
   const published = event.status === "published"
+  const past = event.status === "past"
 
   return (
     <div className="sticky top-0 z-10 -mx-6 -mt-8 border-b bg-background">
@@ -35,7 +36,9 @@ export function EventEditorHeader({
             </Link>
           </Button>
           <span className="truncate text-sm font-semibold">{event.title}</span>
-          <Badge variant={published ? "default" : "secondary"}>
+          <Badge
+            variant={published ? "default" : past ? "outline" : "secondary"}
+          >
             {formatEventStatus(event.status)}
           </Badge>
         </div>
@@ -44,16 +47,16 @@ export function EventEditorHeader({
             variant="outline"
             size="sm"
             onClick={onSave}
-            disabled={isSaving}
+            disabled={isSaving || past}
           >
             {isSaving ? "Saving…" : "Save"}
           </Button>
           <Button
             size="sm"
             onClick={onPublish}
-            disabled={published || isPublishing}
+            disabled={published || past || isPublishing}
           >
-            {published ? "Published" : isPublishing ? "Publishing…" : "Publish"}
+            {published ? "Published" : past ? "Ended" : isPublishing ? "Publishing…" : "Publish"}
           </Button>
         </div>
       </div>

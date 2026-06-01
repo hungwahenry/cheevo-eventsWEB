@@ -111,7 +111,15 @@ export function EventsTable() {
       id: "status",
       header: "Status",
       cell: (e) => (
-        <Badge variant={e.status === "published" ? "default" : "secondary"}>
+        <Badge
+          variant={
+            e.status === "published"
+              ? "default"
+              : e.status === "past"
+                ? "outline"
+                : "secondary"
+          }
+        >
           {formatEventStatus(e.status)}
         </Badge>
       ),
@@ -171,6 +179,7 @@ export function EventsTable() {
             <ToggleGroupItem value="all">All</ToggleGroupItem>
             <ToggleGroupItem value="draft">Drafts</ToggleGroupItem>
             <ToggleGroupItem value="published">Published</ToggleGroupItem>
+            <ToggleGroupItem value="past">Past</ToggleGroupItem>
           </ToggleGroup>
         }
         empty={{

@@ -1,4 +1,4 @@
-export type EventStatus = "draft" | "published"
+export type EventStatus = "draft" | "published" | "past"
 
 export type Interest = {
   id: number

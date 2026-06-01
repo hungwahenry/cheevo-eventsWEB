@@ -31,15 +31,21 @@ export function EventDetailHeader({ event }: { event: EventItem }) {
             </span>
           </div>
           <Badge
-            variant={event.status === "published" ? "default" : "secondary"}
+            variant={
+              event.status === "published"
+                ? "default"
+                : event.status === "past"
+                  ? "outline"
+                  : "secondary"
+            }
           >
             {formatEventStatus(event.status)}
           </Badge>
         </div>
-        <Button asChild size="sm">
+        <Button asChild size="sm" variant={event.status === "past" ? "outline" : "default"}>
           <Link href={`/organizer/events/${event.id}/edit`}>
             <PencilIcon className="size-4" />
-            Edit event
+            {event.status === "past" ? "View event" : "Edit event"}
           </Link>
         </Button>
       </div>

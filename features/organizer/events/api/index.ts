@@ -13,7 +13,7 @@ export function listInterests() {
   return api.get<Interest[]>("/interests")
 }
 
-export type EventStatusFilter = "draft" | "published"
+export type EventStatusFilter = "draft" | "published" | "past"
 
 export function listEvents(
   page: number,

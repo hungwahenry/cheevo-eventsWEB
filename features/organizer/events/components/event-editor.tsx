@@ -64,6 +64,15 @@ function defaults(event: EventItem): EventInput {
   }
 }
 
+function EventEndedBanner() {
+  return (
+    <div className="bg-muted text-muted-foreground mt-4 rounded-lg border px-4 py-3 text-sm">
+      This event has ended — its details, tickets, gallery, features, and
+      broadcasts are read-only.
+    </div>
+  )
+}
+
 export function EventEditor({ event }: { event: EventItem }) {
   const update = useUpdateEvent(event.id)
   const publish = usePublishEvent(event.id)
@@ -180,7 +189,12 @@ export function EventEditor({ event }: { event: EventItem }) {
 
       <PublishErrors errors={publishErrors} />
 
-      <div className="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-3 lg:gap-10">
+      {event.status === "past" ? <EventEndedBanner /> : null}
+
+      <fieldset
+        disabled={event.status === "past"}
+        className="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-3 lg:gap-10"
+      >
         <aside className="order-1 flex flex-col gap-6 lg:sticky lg:top-16 lg:order-2 lg:col-span-1 lg:self-start">
           <FlyerSection event={event} />
         </aside>
@@ -192,7 +206,7 @@ export function EventEditor({ event }: { event: EventItem }) {
           <GallerySection event={event} />
           <FeaturesSection event={event} />
         </div>
-      </div>
+      </fieldset>
     </div>
   )
 }
