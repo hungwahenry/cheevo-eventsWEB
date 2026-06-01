@@ -1,6 +1,7 @@
 "use client"
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { BroadcastsList } from "@/features/organizer/events/broadcasts/components/broadcasts-list"
 import { EventDetailHeader } from "@/features/organizer/events/components/detail/event-detail-header"
 import { EventStatsStrip } from "@/features/organizer/events/components/detail/event-stats-strip"
 import { IssuedTicketsList } from "@/features/organizer/events/issued-tickets/components/issued-tickets-list"
@@ -51,6 +52,7 @@ export function EventDetail({ event }: { event: EventItem }) {
                 </span>
               ) : null}
             </TabsTrigger>
+            <TabsTrigger value="broadcasts">Broadcasts</TabsTrigger>
           </TabsList>
 
           <TabsContent value="sales">
@@ -67,6 +69,10 @@ export function EventDetail({ event }: { event: EventItem }) {
 
           <TabsContent value="comments">
             <ModerationCommentsList eventId={event.id} />
+          </TabsContent>
+
+          <TabsContent value="broadcasts">
+            <BroadcastsList eventId={event.id} />
           </TabsContent>
         </Tabs>
       </div>
