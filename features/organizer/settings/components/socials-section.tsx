@@ -5,7 +5,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { SocialHandleField } from "@/features/organizer/onboarding/components/social-handle-field"
 import { useSocialPlatforms } from "@/features/organizer/settings/hooks"
 
-export type DraftSocials = Record<number, string>
+export type DraftSocials = Record<string, string>
 
 type Props = {
   socials: DraftSocials
@@ -30,9 +30,9 @@ export function SocialsSection({ socials, onChange }: Props) {
               <Label>{platform.name}</Label>
               <SocialHandleField
                 platform={platform}
-                value={socials[platform.id] ?? ""}
+                value={socials[platform.slug] ?? ""}
                 onChange={(value) =>
-                  onChange({ ...socials, [platform.id]: value })
+                  onChange({ ...socials, [platform.slug]: value })
                 }
               />
             </div>

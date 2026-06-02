@@ -37,14 +37,7 @@ export function SettingsForm({ organisation }: Props) {
   )
   const [website, setWebsite] = useState(organisation.website ?? "")
   const [socials, setSocials] = useState<DraftSocials>(() =>
-    Object.fromEntries(
-      organisation.socials.map((s) => {
-        const platform = (socialPlatforms.data ?? []).find(
-          (p) => p.slug === s.platform
-        )
-        return [platform?.id ?? 0, s.handle]
-      })
-    )
+    Object.fromEntries(organisation.socials.map((s) => [s.platform, s.handle]))
   )
   const [logo, setLogo] = useState<File | null>(null)
   const [cover, setCover] = useState<File | null>(null)
@@ -64,10 +57,13 @@ export function SettingsForm({ organisation }: Props) {
       cover,
       socials: Object.entries(socials)
         .filter(([, handle]) => handle.trim() !== "")
-        .map(([platform_id, handle]) => ({
-          platform_id: Number(platform_id),
-          handle: handle.trim(),
-        })),
+        .map(([slug, handle]) => {
+          const platform = (socialPlatforms.data ?? []).find((p) => p.slug === slug)
+          return platform
+            ? { platform_id: platform.id, handle: handle.trim() }
+            : null
+        })
+        .filter((s): s is { platform_id: number; handle: string } => s !== null),
     })
   }
 
