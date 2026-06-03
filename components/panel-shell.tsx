@@ -7,6 +7,7 @@ import {
   SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
+  SidebarGroupLabel,
   SidebarHeader,
   SidebarInset,
   SidebarMenu,
@@ -27,6 +28,12 @@ export type NavItem = {
   icon: LucideIcon
   /** Only highlight on an exact path match (use for the index/dashboard route). */
   exact?: boolean
+}
+
+export type NavSection = {
+  /** Optional label rendered above the section's items. Omit for an unlabelled top group. */
+  label?: string
+  items: NavItem[]
 }
 
 /** The workspace shown in the sidebar header — the organisation for organizers. */
@@ -52,17 +59,23 @@ function initials(value: string): string {
 export function PanelShell({
   brand,
   nav,
+  sections,
   children,
 }: {
   brand: PanelBrand
-  nav: NavItem[]
+  /** Flat nav. Use `sections` for grouped/labelled navigation. */
+  nav?: NavItem[]
+  /** Grouped nav. Takes precedence over `nav` if provided. */
+  sections?: NavSection[]
   children: React.ReactNode
 }) {
   const pathname = usePathname()
   const { data: user } = useMe()
   const { signOut, isPending } = useSignOut()
 
-  const current = nav.find((item) => isActive(pathname, item))
+  const resolvedSections: NavSection[] = sections ?? [{ items: nav ?? [] }]
+  const allItems = resolvedSections.flatMap((s) => s.items)
+  const current = allItems.find((item) => isActive(pathname, item))
   const displayName = user?.profile.first_name
     ? `${user.profile.first_name} ${user.profile.last_name ?? ""}`.trim()
     : user?.email
@@ -87,25 +100,30 @@ export function PanelShell({
         </SidebarHeader>
 
         <SidebarContent>
-          <SidebarGroup>
-            <SidebarGroupContent>
-              <SidebarMenu>
-                {nav.map((item) => (
-                  <SidebarMenuItem key={item.href}>
-                    <SidebarMenuButton
-                      asChild
-                      isActive={isActive(pathname, item)}
-                    >
-                      <Link href={item.href}>
-                        <item.icon />
-                        <span>{item.title}</span>
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ))}
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
+          {resolvedSections.map((section, i) => (
+            <SidebarGroup key={section.label ?? `__section-${i}`}>
+              {section.label ? (
+                <SidebarGroupLabel>{section.label}</SidebarGroupLabel>
+              ) : null}
+              <SidebarGroupContent>
+                <SidebarMenu>
+                  {section.items.map((item) => (
+                    <SidebarMenuItem key={item.href}>
+                      <SidebarMenuButton
+                        asChild
+                        isActive={isActive(pathname, item)}
+                      >
+                        <Link href={item.href}>
+                          <item.icon />
+                          <span>{item.title}</span>
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  ))}
+                </SidebarMenu>
+              </SidebarGroupContent>
+            </SidebarGroup>
+          ))}
         </SidebarContent>
 
         <SidebarFooter>
