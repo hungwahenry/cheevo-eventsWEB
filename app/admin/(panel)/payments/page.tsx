@@ -1,10 +1,16 @@
-import { AdminPlaceholder } from "@/features/admin/components/placeholder"
+import { PaymentsTable } from "@/features/admin/payments/components/payments-table"
 
 export default function AdminPaymentsPage() {
   return (
-    <AdminPlaceholder
-      title="Payments"
-      description="View provider response, resync, manual mark-success. Sprint 3 (Financial Ops)."
-    />
+    <div className="flex flex-col gap-6 p-6">
+      <div>
+        <h1 className="text-2xl font-semibold tracking-tight">Payments</h1>
+        <p className="text-muted-foreground text-sm">
+          Every payment record. Resync to fetch authoritative status from the
+          provider; mark-success for off-platform settlements.
+        </p>
+      </div>
+      <PaymentsTable />
+    </div>
   )
 }
