@@ -3,7 +3,6 @@
 import { PanelShell, type NavSection } from "@/components/panel-shell"
 import { useMe } from "@/features/auth"
 import {
-  ActivityIcon,
   BanknoteIcon,
   BellIcon,
   BookmarkIcon,
@@ -19,7 +18,6 @@ import {
   MessageSquareIcon,
   ScrollTextIcon,
   SearchIcon,
-  ServerIcon,
   SparklesIcon,
   TagIcon,
   TicketIcon,
@@ -115,7 +113,6 @@ const SECTIONS: NavSection[] = [
       { title: "Search", href: "/admin/search", icon: SearchIcon },
       { title: "Ops", href: "/admin/ops", icon: WrenchIcon },
       { title: "Audit log", href: "/admin/audit-log", icon: FileTextIcon },
-      { title: "Analytics", href: "/admin/analytics", icon: ActivityIcon },
     ],
   },
 ]

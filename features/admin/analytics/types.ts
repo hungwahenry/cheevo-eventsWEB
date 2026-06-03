@@ -26,6 +26,12 @@ export type AnalyticsOverview = {
     total_minor: number
     last_30d_minor: number
   }
+  action_items: {
+    open_reports: number
+    pending_payouts: number
+    failed_payouts: number
+    failed_jobs: number
+  }
 }
 
 export type AnalyticsInterval = "day" | "week" | "month"
