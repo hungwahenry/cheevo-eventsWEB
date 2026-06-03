@@ -4,6 +4,7 @@ import { DataTable, type DataTableColumn } from "@/components/data-table"
 import { BroadcastStatusBadge } from "@/features/organizer/events/broadcasts/components/broadcast-status-badge"
 import { ComposeBroadcastDialog } from "@/features/organizer/events/broadcasts/components/compose-broadcast-dialog"
 import { useEventBroadcasts } from "@/features/organizer/events/broadcasts/hooks"
+import { useFeature } from "@/features/system/hooks"
 import type {
   Broadcast,
   BroadcastAudience,
@@ -20,6 +21,7 @@ const AUDIENCE_LABEL: Record<BroadcastAudience, string> = {
 export function BroadcastsList({ eventId }: { eventId: string }) {
   const [page, setPage] = useState(1)
   const { data, isLoading, isFetching } = useEventBroadcasts(eventId, page)
+  const broadcastsEnabled = useFeature("broadcasts.enabled")
 
   const columns: DataTableColumn<Broadcast>[] = [
     {
@@ -82,7 +84,7 @@ export function BroadcastsList({ eventId }: { eventId: string }) {
       lastPage={data?.last_page ?? 1}
       total={data?.total}
       onPageChange={setPage}
-      filters={<ComposeBroadcastDialog eventId={eventId} />}
+      filters={broadcastsEnabled ? <ComposeBroadcastDialog eventId={eventId} /> : null}
       empty={{
         title: "No broadcasts yet",
         description:

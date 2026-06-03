@@ -10,6 +10,7 @@ import {
   usePayoutAccount,
   usePayouts,
 } from "@/features/organizer/payouts/hooks"
+import { useFeature } from "@/features/system/hooks"
 
 const IN_FLIGHT_STATUSES = ["requested", "approved", "processing"] as const
 
@@ -22,6 +23,7 @@ export function PayoutsPage({ orgId }: { orgId: string }) {
     payouts?.items.some((p) =>
       (IN_FLIGHT_STATUSES as readonly string[]).includes(p.status)
     ) ?? false
+  const payoutsEnabled = useFeature("payouts.enabled")
 
   return (
     <div className="flex flex-col gap-6">
@@ -32,7 +34,7 @@ export function PayoutsPage({ orgId }: { orgId: string }) {
             Ticket revenue and your payout account.
           </p>
         </div>
-        {balance ? (
+        {balance && payoutsEnabled ? (
           <RequestPayoutDialog
             orgId={orgId}
             balance={balance}

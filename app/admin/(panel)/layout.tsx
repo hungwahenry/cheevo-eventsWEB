@@ -21,6 +21,7 @@ import {
   SparklesIcon,
   TagIcon,
   TicketIcon,
+  ToggleLeftIcon,
   UsersIcon,
   WrenchIcon,
 } from "lucide-react"
@@ -112,6 +113,7 @@ const SECTIONS: NavSection[] = [
       },
       { title: "Search", href: "/admin/search", icon: SearchIcon },
       { title: "Ops", href: "/admin/ops", icon: WrenchIcon },
+      { title: "Flags & config", href: "/admin/system", icon: ToggleLeftIcon },
       { title: "Audit log", href: "/admin/audit-log", icon: FileTextIcon },
     ],
   },
