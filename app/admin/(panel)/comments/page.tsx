@@ -1,10 +1,15 @@
-import { AdminPlaceholder } from "@/features/admin/components/placeholder"
+import { CommentsTable } from "@/features/admin/comments/components/comments-table"
 
 export default function AdminCommentsPage() {
   return (
-    <AdminPlaceholder
-      title="Comments"
-      description="Admin comment moderation. Sprint 2 (Trust & Safety)."
-    />
+    <div className="flex flex-col gap-6 p-6">
+      <div>
+        <h1 className="text-2xl font-semibold tracking-tight">Comments</h1>
+        <p className="text-muted-foreground text-sm">
+          Cross-event comment moderation. Use Flagged to triage user reports.
+        </p>
+      </div>
+      <CommentsTable />
+    </div>
   )
 }
