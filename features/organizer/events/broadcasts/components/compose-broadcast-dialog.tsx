@@ -25,7 +25,7 @@ import {
   useSendTestBroadcast,
 } from "@/features/organizer/events/broadcasts/hooks"
 import { BROADCAST_LIMITS } from "@/features/organizer/events/broadcasts/limits"
-import { RichTextEditor } from "@/features/organizer/events/broadcasts/components/rich-text-editor"
+import { RichTextEditor } from "@/components/rich-text-editor"
 import type {
   BroadcastAudience,
   CreateBroadcastPayload,

@@ -9,6 +9,7 @@ import {
   Building2Icon,
   CalendarIcon,
   CreditCardIcon,
+  FileIcon,
   FileTextIcon,
   FlagIcon,
   HelpCircleIcon,
@@ -101,6 +102,7 @@ const SECTIONS: NavSection[] = [
         icon: HelpCircleIcon,
       },
       { title: "Welcome screen", href: "/admin/welcome", icon: ImageIcon },
+      { title: "Pages", href: "/admin/pages", icon: FileIcon },
     ],
   },
   {
