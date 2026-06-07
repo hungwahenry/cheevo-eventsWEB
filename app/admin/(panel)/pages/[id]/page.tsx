@@ -1,4 +1,4 @@
-import { PageEditor } from "@/features/admin/pages/components/page-editor"
+import { PageForm } from "@/features/admin/pages/components/page-form"
 
 export default async function AdminPageDetailPage({
   params,
@@ -6,5 +6,5 @@ export default async function AdminPageDetailPage({
   params: Promise<{ id: string }>
 }) {
   const { id } = await params
-  return <PageEditor id={id} />
+  return <PageForm mode="edit" id={id} />
 }

@@ -8,11 +8,6 @@ import { isApiError } from "@/lib/api"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
 
-/**
- * Update the cached page directly (no refetch) so the editor's local state
- * isn't clobbered while the user is mid-edit. The list cache is invalidated
- * so the list re-fetches in the background but the open editor stays calm.
- */
 function patchPageInCache(
   qc: ReturnType<typeof useQueryClient>,
   page: AdminPage
