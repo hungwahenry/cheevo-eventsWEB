@@ -65,7 +65,7 @@ export function useLogin() {
     verifyOtp.mutate(data, {
       onSuccess: async () => {
         await queryClient.invalidateQueries({ queryKey: meQueryKey })
-        router.replace("/")
+        router.replace("/dashboard")
       },
       onError: (error) => {
         if (isApiError(error) && error.isValidation) {

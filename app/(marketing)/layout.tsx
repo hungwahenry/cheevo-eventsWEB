@@ -2,8 +2,6 @@ import { Geist } from "next/font/google"
 
 import { cn } from "@/lib/utils"
 
-import "./marketing.css"
-
 const geist = Geist({
   subsets: ["latin"],
   variable: "--font-marketing",
