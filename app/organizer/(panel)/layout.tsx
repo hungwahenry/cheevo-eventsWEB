@@ -5,6 +5,7 @@ import { useMe } from "@/features/auth"
 import {
   BanknoteIcon,
   CalendarIcon,
+  CircleUserIcon,
   LayoutDashboardIcon,
   SettingsIcon,
   UsersIcon,
@@ -23,6 +24,7 @@ const NAV: NavItem[] = [
   { title: "Payouts", href: "/organizer/payouts", icon: BanknoteIcon },
   { title: "Team", href: "/organizer/team", icon: UsersIcon },
   { title: "Settings", href: "/organizer/settings", icon: SettingsIcon },
+  { title: "Account", href: "/organizer/account", icon: CircleUserIcon },
 ]
 
 export default function OrganizerPanelLayout({
