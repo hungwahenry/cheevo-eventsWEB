@@ -1,26 +1,34 @@
 import { SESSION_COOKIE } from "@/lib/constants"
 import { NextResponse, type NextRequest } from "next/server"
 
-const PUBLIC_ROUTES = ["/login"]
+const PUBLIC_ROUTES = ["/"]
+const GUEST_ONLY_ROUTES = ["/login"]
 
-// Optimistic route guard: redirect to /login when the session cookie is absent.
-// Real authorization is enforced by Laravel on each proxied API call.
-export function proxy(request: NextRequest): NextResponse {
-  const { pathname } = request.nextUrl
-  const isPublic = PUBLIC_ROUTES.some(
+const matches = (pathname: string, routes: string[]): boolean =>
+  routes.some(
     (route) => pathname === route || pathname.startsWith(`${route}/`)
   )
+
+export function proxy(request: NextRequest): NextResponse {
+  const { pathname } = request.nextUrl
   const hasSession = request.cookies.has(SESSION_COOKIE)
 
-  if (!hasSession && !isPublic) {
-    const url = request.nextUrl.clone()
-    url.pathname = "/login"
-    return NextResponse.redirect(url)
+  if (matches(pathname, PUBLIC_ROUTES)) {
+    return NextResponse.next()
   }
 
-  if (hasSession && isPublic) {
+  if (matches(pathname, GUEST_ONLY_ROUTES)) {
+    if (hasSession) {
+      const url = request.nextUrl.clone()
+      url.pathname = "/dashboard"
+      return NextResponse.redirect(url)
+    }
+    return NextResponse.next()
+  }
+
+  if (!hasSession) {
     const url = request.nextUrl.clone()
-    url.pathname = "/"
+    url.pathname = "/login"
     return NextResponse.redirect(url)
   }
 
@@ -28,6 +36,5 @@ export function proxy(request: NextRequest): NextResponse {
 }
 
 export const config = {
-  // Run on page routes only — skip API (handles its own auth), static assets, and files.
-  matcher: ["/((?!api|_next/static|_next/image|favicon.ico|.*\\.).*)"],
+  matcher: ["/((?!api|relay|_next/static|_next/image|favicon.ico|.*\\.).*)"],
 }
