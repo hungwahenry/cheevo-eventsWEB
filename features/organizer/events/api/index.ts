@@ -45,7 +45,11 @@ export function updateEvent(id: string, data: Record<string, unknown>) {
 
 const MAX_FLYER_BYTES = 50 * 1024 * 1024
 
-export async function updateEventFlyer(id: string, flyer: File) {
+export async function updateEventFlyer(
+  id: string,
+  flyer: File,
+  onProgress?: (percent: number) => void
+) {
   if (flyer.size > MAX_FLYER_BYTES) {
     throw new ApiError({
       message: "Flyer is too large. Maximum size is 50MB.",
@@ -61,36 +65,58 @@ export async function updateEventFlyer(id: string, flyer: File) {
   const form = new FormData()
   form.append("flyer", flyer)
 
-  const controller = new AbortController()
-  const timer = setTimeout(() => controller.abort(), 120_000)
-  try {
-    const res = await fetch(upload_url, {
-      method: "POST",
-      headers: { Accept: "application/json" },
-      body: form,
-      signal: controller.signal,
-    })
-    const body = await res.json().catch(() => null)
-    if (!res.ok) {
-      throw new ApiError({
-        message: body?.message ?? "Couldn't upload the flyer.",
-        status: res.status,
-        code: body?.code,
-        errors: body?.errors,
-        requestId: body?.request_id,
-      })
+  return new Promise<EventItem>((resolve, reject) => {
+    const xhr = new XMLHttpRequest()
+    xhr.open("POST", upload_url)
+    xhr.responseType = "json"
+    xhr.timeout = 180_000
+    xhr.setRequestHeader("Accept", "application/json")
+
+    xhr.upload.onprogress = (event) => {
+      if (event.lengthComputable) {
+        onProgress?.(Math.round((event.loaded / event.total) * 100))
+      }
     }
-    return body.data as EventItem
-  } catch (error) {
-    if (error instanceof ApiError) throw error
-    throw new ApiError({
-      message: "Network error. Please check your connection.",
-      status: 0,
-      code: "network_error",
-    })
-  } finally {
-    clearTimeout(timer)
-  }
+
+    xhr.onload = () => {
+      const body = xhr.response as
+        | { data?: EventItem; message?: string; code?: string; errors?: Record<string, string[]>; request_id?: string }
+        | null
+      if (xhr.status >= 200 && xhr.status < 300 && body?.data) {
+        resolve(body.data)
+        return
+      }
+      reject(
+        new ApiError({
+          message: body?.message ?? "Couldn't upload the flyer.",
+          status: xhr.status,
+          code: body?.code,
+          errors: body?.errors,
+          requestId: body?.request_id,
+        })
+      )
+    }
+
+    xhr.onerror = () =>
+      reject(
+        new ApiError({
+          message: "Network error. Please check your connection.",
+          status: 0,
+          code: "network_error",
+        })
+      )
+
+    xhr.ontimeout = () =>
+      reject(
+        new ApiError({
+          message: "Upload timed out. Try a smaller file or a better connection.",
+          status: 0,
+          code: "timeout",
+        })
+      )
+
+    xhr.send(form)
+  })
 }
 
 export function publishEvent(id: string) {

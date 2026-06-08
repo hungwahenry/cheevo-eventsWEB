@@ -37,6 +37,7 @@ export function useFlyerUpload(
   const [crop, setCrop] = useState<Point>({ x: 0, y: 0 })
   const [zoom, setZoom] = useState(1)
   const [pickError, setPickError] = useState<string | null>(null)
+  const [progress, setProgress] = useState(0)
   const pixelsRef = useRef<Area | null>(null)
 
   useEffect(() => {
@@ -53,6 +54,7 @@ export function useFlyerUpload(
     setCrop({ x: 0, y: 0 })
     setZoom(1)
     setPickError(null)
+    setProgress(0)
     pixelsRef.current = null
   }, [isOpen])
 
@@ -93,7 +95,11 @@ export function useFlyerUpload(
         type: "image/jpeg",
       })
     }
-    update.mutate(toUpload, { onSuccess: () => onSuccess?.() })
+    setProgress(0)
+    update.mutate(
+      { file: toUpload, onProgress: setProgress },
+      { onSuccess: () => onSuccess?.() }
+    )
   }
 
   const errorMessages = pickError
@@ -114,6 +120,7 @@ export function useFlyerUpload(
     pickFile,
     submit,
     isUploading: update.isPending,
+    progress,
     errorMessages,
   }
 }

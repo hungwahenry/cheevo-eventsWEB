@@ -10,6 +10,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
+import { Progress } from "@/components/ui/progress"
 import { Slider } from "@/components/ui/slider"
 import { useFlyerUpload } from "@/features/organizer/events/hooks"
 import { useRef } from "react"
@@ -91,6 +92,15 @@ export function FlyerUploadDialog({
             if (picked) flyer.pickFile(picked)
           }}
         />
+
+        {flyer.isUploading ? (
+          <div className="flex flex-col gap-1.5">
+            <Progress value={flyer.progress} />
+            <span className="text-xs text-muted-foreground">
+              Uploading… {flyer.progress}%
+            </span>
+          </div>
+        ) : null}
 
         <FormErrors messages={flyer.errorMessages} />
 
