@@ -43,7 +43,17 @@ export function updateEvent(id: string, data: Record<string, unknown>) {
   return api.patch<EventItem>(`/organizer/events/${id}`, data)
 }
 
+const MAX_FLYER_BYTES = 20 * 1024 * 1024
+
 export async function updateEventFlyer(id: string, flyer: File) {
+  if (flyer.size > MAX_FLYER_BYTES) {
+    throw new ApiError({
+      message: "Flyer is too large. Maximum size is 20MB.",
+      status: 0,
+      code: "file_too_large",
+    })
+  }
+
   const { upload_url } = await api.post<{ upload_url: string }>(
     `/organizer/events/${id}/flyer-url`
   )
