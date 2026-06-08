@@ -10,7 +10,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { Progress } from "@/components/ui/progress"
 import { Slider } from "@/components/ui/slider"
 import { useFlyerUpload } from "@/features/organizer/events/hooks"
 import { useRef } from "react"
@@ -20,20 +19,17 @@ const ACCEPTED =
   "image/jpeg,image/png,image/webp,video/mp4,video/quicktime,video/webm"
 
 type FlyerUploadDialogProps = {
-  eventId: string
   open: boolean
   onOpenChange: (open: boolean) => void
+  onSubmit: (file: File) => void
 }
 
 export function FlyerUploadDialog({
-  eventId,
   open,
   onOpenChange,
+  onSubmit,
 }: FlyerUploadDialogProps) {
-  const flyer = useFlyerUpload(eventId, {
-    isOpen: open,
-    onSuccess: () => onOpenChange(false),
-  })
+  const flyer = useFlyerUpload({ isOpen: open, onSubmit })
   const inputRef = useRef<HTMLInputElement>(null)
 
   return (
@@ -93,15 +89,6 @@ export function FlyerUploadDialog({
           }}
         />
 
-        {flyer.isUploading ? (
-          <div className="flex flex-col gap-1.5">
-            <Progress value={flyer.progress} />
-            <span className="text-xs text-muted-foreground">
-              Uploading… {flyer.progress}%
-            </span>
-          </div>
-        ) : null}
-
         <FormErrors messages={flyer.errorMessages} />
 
         <DialogFooter className="gap-2">
@@ -110,11 +97,8 @@ export function FlyerUploadDialog({
               Change file
             </Button>
           ) : null}
-          <Button
-            onClick={flyer.submit}
-            disabled={!flyer.file || flyer.isUploading}
-          >
-            {flyer.isUploading ? "Uploading…" : "Use"}
+          <Button onClick={flyer.submit} disabled={!flyer.file}>
+            Use
           </Button>
         </DialogFooter>
       </DialogContent>

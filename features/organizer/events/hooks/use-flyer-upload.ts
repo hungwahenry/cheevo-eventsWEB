@@ -1,5 +1,3 @@
-import { useUpdateFlyer } from "@/features/organizer/events/hooks/use-event-mutations"
-import { isApiError } from "@/lib/api"
 import { useEffect, useRef, useState } from "react"
 import type { Area } from "react-easy-crop"
 
@@ -22,22 +20,16 @@ function toMb(bytes: number): string {
 
 type Options = {
   isOpen: boolean
-  onSuccess?: () => void
+  onSubmit: (file: File) => void
 }
 
-export function useFlyerUpload(
-  eventId: string,
-  { isOpen, onSuccess }: Options
-) {
-  const update = useUpdateFlyer(eventId)
-
+export function useFlyerUpload({ isOpen, onSubmit }: Options) {
   const [file, setFile] = useState<File | null>(null)
   const [src, setSrc] = useState<string | null>(null)
   const [kind, setKind] = useState<Kind | null>(null)
   const [crop, setCrop] = useState<Point>({ x: 0, y: 0 })
   const [zoom, setZoom] = useState(1)
   const [pickError, setPickError] = useState<string | null>(null)
-  const [progress, setProgress] = useState(0)
   const pixelsRef = useRef<Area | null>(null)
 
   useEffect(() => {
@@ -54,7 +46,6 @@ export function useFlyerUpload(
     setCrop({ x: 0, y: 0 })
     setZoom(1)
     setPickError(null)
-    setProgress(0)
     pixelsRef.current = null
   }, [isOpen])
 
@@ -95,18 +86,10 @@ export function useFlyerUpload(
         type: "image/jpeg",
       })
     }
-    setProgress(0)
-    update.mutate(
-      { file: toUpload, onProgress: setProgress },
-      { onSuccess: () => onSuccess?.() }
-    )
+    onSubmit(toUpload)
   }
 
-  const errorMessages = pickError
-    ? [pickError]
-    : update.error && isApiError(update.error)
-      ? update.error.messages()
-      : []
+  const errorMessages = pickError ? [pickError] : []
 
   return {
     file,
@@ -119,8 +102,6 @@ export function useFlyerUpload(
     setPixels,
     pickFile,
     submit,
-    isUploading: update.isPending,
-    progress,
     errorMessages,
   }
 }

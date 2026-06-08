@@ -3,6 +3,7 @@ import {
   eventKey,
   eventsKey,
 } from "@/features/organizer/events/hooks/use-events"
+import { isApiError } from "@/lib/api"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
 
@@ -35,6 +36,11 @@ export function useUpdateFlyer(id: string) {
       toast.success("Flyer updated.")
       queryClient.invalidateQueries({ queryKey: eventKey(id) })
       queryClient.invalidateQueries({ queryKey: eventsKey })
+    },
+    onError: (error) => {
+      toast.error(
+        isApiError(error) ? error.message : "Couldn't upload the flyer."
+      )
     },
   })
 }
