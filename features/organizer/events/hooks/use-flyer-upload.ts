@@ -6,6 +6,20 @@ import type { Area } from "react-easy-crop"
 type Kind = "image" | "video"
 type Point = { x: number; y: number }
 
+const MAX_VIDEO_BYTES = 50 * 1024 * 1024
+const ACCEPTED_TYPES = new Set([
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+  "video/mp4",
+  "video/quicktime",
+  "video/webm",
+])
+
+function toMb(bytes: number): string {
+  return `${Math.round(bytes / (1024 * 1024))}MB`
+}
+
 type Options = {
   isOpen: boolean
   onSuccess?: () => void
@@ -22,6 +36,7 @@ export function useFlyerUpload(
   const [kind, setKind] = useState<Kind | null>(null)
   const [crop, setCrop] = useState<Point>({ x: 0, y: 0 })
   const [zoom, setZoom] = useState(1)
+  const [pickError, setPickError] = useState<string | null>(null)
   const pixelsRef = useRef<Area | null>(null)
 
   useEffect(() => {
@@ -37,10 +52,25 @@ export function useFlyerUpload(
     setKind(null)
     setCrop({ x: 0, y: 0 })
     setZoom(1)
+    setPickError(null)
     pixelsRef.current = null
   }, [isOpen])
 
   const pickFile = (picked: File) => {
+    if (!ACCEPTED_TYPES.has(picked.type)) {
+      setPickError(
+        "Unsupported file. Use a JPEG, PNG, or WebP image, or an MP4, MOV, or WebM video."
+      )
+      return
+    }
+    if (picked.type.startsWith("video/") && picked.size > MAX_VIDEO_BYTES) {
+      setPickError(
+        `Video is too large (${toMb(picked.size)}). Maximum is ${toMb(MAX_VIDEO_BYTES)}.`
+      )
+      return
+    }
+
+    setPickError(null)
     if (src) URL.revokeObjectURL(src)
     setFile(picked)
     setSrc(URL.createObjectURL(picked))
@@ -66,8 +96,11 @@ export function useFlyerUpload(
     update.mutate(toUpload, { onSuccess: () => onSuccess?.() })
   }
 
-  const errorMessages =
-    update.error && isApiError(update.error) ? update.error.messages() : []
+  const errorMessages = pickError
+    ? [pickError]
+    : update.error && isApiError(update.error)
+      ? update.error.messages()
+      : []
 
   return {
     file,

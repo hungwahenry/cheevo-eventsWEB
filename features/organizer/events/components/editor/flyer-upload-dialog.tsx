@@ -41,7 +41,7 @@ export function FlyerUploadDialog({
         <DialogHeader>
           <DialogTitle>Upload flyer</DialogTitle>
           <DialogDescription>
-            Image (cropped to 4:5) or a short vertical video.
+            Image (cropped to 4:5) or a short vertical video, up to 50MB.
           </DialogDescription>
         </DialogHeader>
 
