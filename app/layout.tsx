@@ -1,3 +1,4 @@
+import type { Metadata } from "next"
 import { Geist_Mono, Inter } from "next/font/google"
 
 import "./globals.css"
@@ -12,6 +13,18 @@ const fontMono = Geist_Mono({
   subsets: ["latin"],
   variable: "--font-mono",
 })
+
+export const metadata: Metadata = {
+  metadataBase: new URL("https://cheevo.vip"),
+  title: {
+    default: "cheevo for organisers — sell tickets, get paid, move on",
+    template: "%s — cheevo",
+  },
+  description:
+    "All-in-one event hosting for Nigeria: tickets, payouts, broadcasts, door scanning and attendees. One dashboard.",
+  applicationName: "cheevo for organisers",
+  robots: { index: false, follow: false },
+}
 
 export default function RootLayout({
   children,
