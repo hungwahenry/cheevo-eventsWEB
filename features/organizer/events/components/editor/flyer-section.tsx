@@ -5,13 +5,23 @@ import { Progress } from "@/components/ui/progress"
 import { FlyerUploadDialog } from "@/features/organizer/events/components/editor/flyer-upload-dialog"
 import { useUpdateFlyer } from "@/features/organizer/events/hooks/use-event-mutations"
 import type { EventItem } from "@/features/organizer/events/types"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 
 export function FlyerSection({ event }: { event: EventItem }) {
   const [open, setOpen] = useState(false)
   const [progress, setProgress] = useState(0)
   const update = useUpdateFlyer(event.id)
   const uploading = update.isPending
+
+  useEffect(() => {
+    if (!uploading) return
+    const warn = (event: BeforeUnloadEvent) => {
+      event.preventDefault()
+      event.returnValue = ""
+    }
+    window.addEventListener("beforeunload", warn)
+    return () => window.removeEventListener("beforeunload", warn)
+  }, [uploading])
 
   const startUpload = (file: File) => {
     setOpen(false)
