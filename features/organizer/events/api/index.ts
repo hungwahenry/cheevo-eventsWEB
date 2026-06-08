@@ -7,7 +7,7 @@ import type {
   PlaceDetails,
   PlacePrediction,
 } from "@/features/organizer/events/types"
-import { api } from "@/lib/api"
+import { api, ApiError } from "@/lib/api"
 
 export function listInterests() {
   return api.get<Interest[]>("/interests")
@@ -43,11 +43,44 @@ export function updateEvent(id: string, data: Record<string, unknown>) {
   return api.patch<EventItem>(`/organizer/events/${id}`, data)
 }
 
-export function updateEventFlyer(id: string, flyer: File) {
+export async function updateEventFlyer(id: string, flyer: File) {
+  const { upload_url } = await api.post<{ upload_url: string }>(
+    `/organizer/events/${id}/flyer-url`
+  )
+
   const form = new FormData()
-  form.append("_method", "PATCH")
   form.append("flyer", flyer)
-  return api.post<EventItem>(`/organizer/events/${id}`, form)
+
+  const controller = new AbortController()
+  const timer = setTimeout(() => controller.abort(), 120_000)
+  try {
+    const res = await fetch(upload_url, {
+      method: "POST",
+      headers: { Accept: "application/json" },
+      body: form,
+      signal: controller.signal,
+    })
+    const body = await res.json().catch(() => null)
+    if (!res.ok) {
+      throw new ApiError({
+        message: body?.message ?? "Couldn't upload the flyer.",
+        status: res.status,
+        code: body?.code,
+        errors: body?.errors,
+        requestId: body?.request_id,
+      })
+    }
+    return body.data as EventItem
+  } catch (error) {
+    if (error instanceof ApiError) throw error
+    throw new ApiError({
+      message: "Network error. Please check your connection.",
+      status: 0,
+      code: "network_error",
+    })
+  } finally {
+    clearTimeout(timer)
+  }
 }
 
 export function publishEvent(id: string) {
