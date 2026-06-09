@@ -128,7 +128,6 @@ export function WelcomeEditor() {
         <CardContent className="grid gap-3">
           <div className="bg-muted aspect-[3/4] w-full overflow-hidden rounded-md">
             {currentBg ? (
-              // eslint-disable-next-line @next/next/no-img-element
               <img
                 src={currentBg}
                 alt="Welcome background"
