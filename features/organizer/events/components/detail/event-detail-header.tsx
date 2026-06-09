@@ -2,6 +2,7 @@
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { CopyEventLinkButton } from "@/features/organizer/events/components/copy-event-link-button"
 import {
   formatEventStatus,
   formatEventWhen,
@@ -42,12 +43,17 @@ export function EventDetailHeader({ event }: { event: EventItem }) {
             {formatEventStatus(event.status)}
           </Badge>
         </div>
-        <Button asChild size="sm" variant={event.status === "past" ? "outline" : "default"}>
-          <Link href={`/organizer/events/${event.id}/edit`}>
-            <PencilIcon className="size-4" />
-            {event.status === "past" ? "View event" : "Edit event"}
-          </Link>
-        </Button>
+        <div className="flex items-center gap-2">
+          {event.status === "published" || event.status === "past" ? (
+            <CopyEventLinkButton slug={event.slug} />
+          ) : null}
+          <Button asChild size="sm" variant={event.status === "past" ? "outline" : "default"}>
+            <Link href={`/organizer/events/${event.id}/edit`}>
+              <PencilIcon className="size-4" />
+              {event.status === "past" ? "View event" : "Edit event"}
+            </Link>
+          </Button>
+        </div>
       </div>
     </div>
   )

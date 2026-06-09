@@ -2,6 +2,7 @@
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { CopyEventLinkButton } from "@/features/organizer/events/components/copy-event-link-button"
 import { formatEventStatus } from "@/features/organizer/events/format"
 import type { EventItem } from "@/features/organizer/events/types"
 import { ChevronLeftIcon } from "lucide-react"
@@ -43,6 +44,9 @@ export function EventEditorHeader({
           </Badge>
         </div>
         <div className="flex gap-2">
+          {published || past ? (
+            <CopyEventLinkButton slug={event.slug} />
+          ) : null}
           <Button
             variant="outline"
             size="sm"
